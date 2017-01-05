@@ -1,0 +1,13 @@
+\documentclass[tikz]{standalone}
+\begin{document}
+		\begin{tikzpicture}[scale=1.5]
+			\pgfmathsetmacro{\tip}{0.1}
+			\begin{scope}[>=latex, very thick]
+			\foreach \x in {1, .9, .8}		
+				\draw[<->, red] (-1 * \x, 0) -- (1 * \x, 0);				
+			\node[right, red] at (1, 0) {$Z_{(0,1)}^{\mathbf{3}}$};
+			\draw[<->, blue] (0, -1.5) -- (0, 1.5);
+			\node[above, blue] at (0, 1.5) {$Z_{(1,0)}$};
+			\end{scope}
+		\end{tikzpicture}
+\end{document}

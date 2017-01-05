@@ -1,0 +1,7 @@
+#!/bin/bash
+for fpdf in *.pdf
+do
+    fsvg="${fpdf%.*}.svg" 
+    echo "$fpdf -> $fsvg"
+    pdf2svg $fpdf $fsvg
+done
