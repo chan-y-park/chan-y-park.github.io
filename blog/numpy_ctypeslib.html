@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Using Python ctypes and NumPy ctypeslib - Chan's Blog</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="./numpy_ctypeslib.html">
+
+        <meta name="author" content="Chan Y. Park" />
+        <meta name="keywords" content="Python,NumPy,numpy.ctypeslib,C,C++" />
+        <meta name="description" content="For various reasons we sometimes need to use C or C++ libraries inside a Python program: it may be because there is a component critical to the performance that can gain speed by using a C code, or it may be because there is already an excellent library written in …" />
+
+        <meta property="og:site_name" content="Chan's Blog" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Using Python ctypes and NumPy ctypeslib"/>
+        <meta property="og:url" content="./numpy_ctypeslib.html"/>
+        <meta property="og:description" content="For various reasons we sometimes need to use C or C++ libraries inside a Python program: it may be because there is a component critical to the performance that can gain speed by using a C code, or it may be because there is already an excellent library written in …"/>
+        <meta property="article:published_time" content="2015-12-23" />
+            <meta property="article:section" content="articles" />
+            <meta property="article:tag" content="Python" />
+            <meta property="article:tag" content="NumPy" />
+            <meta property="article:tag" content="numpy.ctypeslib" />
+            <meta property="article:tag" content="C" />
+            <meta property="article:tag" content="C++" />
+            <meta property="article:author" content="Chan Y. Park" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="./theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="./theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="./theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="./theme/css/style.css" type="text/css"/>
+        <link href="./static/custom.css" rel="stylesheet">
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="./" class="navbar-brand">
+Chan's Blog            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="./category/articles.html">Articles</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="./numpy_ctypeslib.html"
+                       rel="bookmark"
+                       title="Permalink to Using Python ctypes and NumPy ctypeslib">
+                        Using Python <tt class="docutils literal">ctypes</tt> and NumPy <tt class="docutils literal">ctypeslib</tt>
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2015-12-23T12:16:00-05:00"> Wed 23 December 2015</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="./tag/python.html">Python</a>
+        /
+	<a href="./tag/numpy.html">NumPy</a>
+        /
+	<a href="./tag/numpyctypeslib.html">numpy.ctypeslib</a>
+        /
+	<a href="./tag/c.html">C</a>
+        /
+	<a href="./tag/c.html">C++</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>For various reasons we sometimes need to use C or C++ libraries inside a Python program: it may be because there is a component critical to the performance that can gain speed by using a C code, or it may be because there is already an excellent library written in C++ that we want to use instead of writing it in Python from scratch.</p>
+<p>Here we will discuss both cases using one of my projects, <a class="reference external" href="https://github.com/chan-y-park/loom">loom</a>, as an example. It includes using a C code discussed in <a class="citation-reference" href="#numba-vs-ctypeslib" id="id1">[numba_vs_ctypeslib]</a> inside a Python code, and glueing an external C++ library called CGAL(Computational Geometry Algorithms Library, <a class="reference external" href="http://www.cgal.org">http://www.cgal.org</a>) to a Python program using NumPy's ctypes interface, which makes the task easier when using NumPy's array than using the original ctypes interface of Python. <a class="reference external" href="https://docs.scipy.org/doc/numpy/user/c-info.python-as-glue.html#index-3">NumPy's own documentation</a> is a good starting point of getting an idea of how to use <tt class="docutils literal">numpy.ctypeslib</tt>.</p>
+<div class="section" id="preparing-a-c-library">
+<h2>Preparing a C library</h2>
+<div class="section" id="creating-a-c-library">
+<h3>Creating a C library</h3>
+<p>One thing to note is that NumPy's ctypes interface, and as a matter of fact Python's ctypes interface too, requires the external library to load to be a shared library. This means that you may need to build the shared library again if you moved your library into a new system, because the linker in the previous system may have used different paths for various libraries that the shared library has dependency. The following is a <tt class="docutils literal">Makefile</tt> in <a class="reference external" href="https://github.com/chan-y-park/loom/tree/master/loom/clibs">loom/clibs</a> to build a shared library <tt class="docutils literal">s_wall.so</tt> from two C source code files, <tt class="docutils literal">solve.c</tt> and <tt class="docutils literal">s_wall.c</tt>. Note that we are using the option <tt class="docutils literal"><span class="pre">-fPIC</span></tt> when compiling the source codes, where PIC stands for Position Independent Code.</p>
+<div class="highlight"><pre><span></span><span class="nv">CC</span> <span class="o">=</span> gcc
+<span class="nv">CFLAGS</span> <span class="o">=</span> -Wall -fPIC -std<span class="o">=</span>c99
+<span class="nf">all</span><span class="o">:</span> <span class="n">s_wall</span>.<span class="n">so</span>
+
+<span class="nf">s_wall.so</span><span class="o">:</span> <span class="n">s_wall</span>.<span class="n">o</span> <span class="n">solve</span>.<span class="n">o</span>
+    <span class="k">$(</span>CC<span class="k">)</span> -Wall -shared -o s_wall.so s_wall.o solve.o
+
+<span class="nf">s_wall.o</span><span class="o">:</span> <span class="n">s_wall</span>.<span class="n">c</span>
+    <span class="k">$(</span>CC<span class="k">)</span> <span class="k">$(</span>CFLAGS<span class="k">)</span> -c s_wall.c
+
+<span class="nf">solve.o</span><span class="o">:</span> <span class="n">solve</span>.<span class="n">c</span>
+    <span class="k">$(</span>CC<span class="k">)</span> <span class="k">$(</span>CFLAGS<span class="k">)</span> -c solve.c
+
+<span class="nf">clean</span><span class="o">:</span>
+    rm *o
+</pre></div>
+</div>
+<div class="section" id="using-a-c-library">
+<h3>Using a C++ library</h3>
+<p>Because NumPy's ctypes interface is for C libraries, when using a C++ library we need to declare to the compiler that we want to compile the C++ code to have a C interface, so that extra decorations of the function name will not happen. (See this <a class="reference external" href="http://stackoverflow.com/questions/1041866/in-c-source-what-is-the-effect-of-extern-c">stackoverflow thread</a> to know more about this.) This is done simply by using <tt class="docutils literal">extern &quot;C&quot;</tt> keyword, as is used in <a class="reference external" href="https://github.com/chan-y-park/loom/blob/master/loom/cgal_intersection/cgal_intersection.h">loom/cgal_intersection/cgal_intersecion.h</a>, which is shown below.</p>
+<div class="highlight"><pre><span></span><span class="c1">// cgal_intersection.h</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span><span class="kt">double</span> <span class="n">x</span><span class="p">;</span> <span class="kt">double</span> <span class="n">y</span><span class="p">;}</span> <span class="n">coordinate</span><span class="p">;</span>
+
+<span class="hll"><span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">int</span> <span class="n">find_intersections_of_curves</span><span class="p">(</span>
+</span>    <span class="n">coordinate</span> <span class="o">*</span><span class="n">curve_1</span><span class="p">,</span> <span class="kt">long</span> <span class="n">curve_1_size</span><span class="p">,</span>
+    <span class="n">coordinate</span> <span class="o">*</span><span class="n">curve_2</span><span class="p">,</span> <span class="kt">long</span> <span class="n">curve_2_size</span><span class="p">,</span>
+    <span class="n">coordinate</span> <span class="o">*</span><span class="n">intersections</span><span class="p">,</span> <span class="kt">int</span> <span class="n">max_num_of_intersections</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="constructing-an-interface-between-c-and-python">
+<h2>Constructing an interface between C and Python</h2>
+<p>Now we have a shared library, the next task is to prepare an interface between a function in the shared library and a Python program. If the function is a simple one, like getting a couple of integers as its arguments and returns a floating-point number, then it can be directly used by the ctypes interface without any additional work as described in <a class="reference external" href="https://docs.scipy.org/doc/numpy-dev/user/c-info.python-as-glue.html#complete-example">this NumPy documentation</a>. But usually we want to exchange a large NumPy array for data and/or a C <tt class="docutils literal">struct</tt> for messages between a C program and a Python program. Both are not much difficult when using <tt class="docutils literal">numpy.ctypeslib</tt>, as we will see shortly.</p>
+<div class="section" id="interface-for-numpy-array">
+<h3>Interface for NumPy array</h3>
+<p>Let's use the library with an interface defined in <tt class="docutils literal">cgal_intersection.h</tt> as an example to build an interface with Python. Relevant Python codes excerpted from <a class="reference external" href="https://github.com/chan-y-park/loom/blob/master/loom/ctypes_api.py">loom/ctypes_api.py</a> are shown below, which loads <tt class="docutils literal">libcgal_intersection.so</tt>, access <tt class="docutils literal">find_intersections_of_curves()</tt>, a C++ function with a C interface defined in the C++ header file, and returns a reference to the function.</p>
+<div class="highlight"><pre><span></span><span class="n">numpy_ctypeslib_flags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">,</span> <span class="s1">&#39;ALIGNED&#39;</span><span class="p">]</span>
+
+<span class="n">array_1d_complex</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span>
+    <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">flags</span><span class="o">=</span><span class="n">numpy_ctypeslib_flags</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">libcgal_get_intersections</span><span class="p">():</span>
+    <span class="n">lib_name</span> <span class="o">=</span> <span class="s1">&#39;libcgal_intersection&#39;</span>
+
+    <span class="n">libcgal_intersection</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">load_library</span><span class="p">(</span>
+        <span class="n">lib_name</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span> <span class="o">+</span>
+         <span class="s1">&#39;/cgal_intersection/&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">get_intersections</span> <span class="o">=</span> <span class="p">(</span><span class="n">libcgal_intersection</span><span class="o">.</span>
+                         <span class="n">find_intersections_of_curves</span><span class="p">)</span>
+
+    <span class="n">get_intersections</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+    <span class="n">get_intersections</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">array_1d_complex</span><span class="p">,</span>
+        <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">,</span>
+        <span class="n">array_1d_complex</span><span class="p">,</span>
+        <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">,</span>
+        <span class="n">array_2d_float</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">get_intersections</span>
+</pre></div>
+<p>Because this works with a C interface, we need to specify the data types of the arguments and the return value of the function, which is conveniently done by setting <tt class="docutils literal">restype</tt> and <tt class="docutils literal">argtypes</tt> attributes of the ctypes library object returned by <tt class="docutils literal">numpy.ctypeslib.load_library</tt>. Usual data types are conveniently provided via ctypes, like <tt class="docutils literal">ctypes.c_int</tt> in the above. See this Python documentation about <a class="reference external" href="https://docs.python.org/3/library/ctypes.html#fundamental-data-types">data types</a> defined in ctypes for more detail.</p>
+<p>One thing you should be careful about is not to allocate memory inside a C function and return its pointer. A safer way is to create a NumPy array from the Python side and let Python takes care of all the memory management, then give the reference to the NumPy array to the C function, which is done with <tt class="docutils literal">numpy.ctypeslib.ndpointer</tt> in the above. First note that we specifies two flags <tt class="docutils literal">['C_CONTIGUOUS', 'ALIGNED']</tt> for NumPy arrays so that the C function can safely access the memory allocated for the NumPy array using a C pointer <tt class="docutils literal">coordinate*</tt> as shown in <tt class="docutils literal">cgal_intersection.h</tt>.</p>
+<p>Now we can call <tt class="docutils literal">libcgal_get_intersections()</tt> to get the function object and use it to call the C function, like the following code excerpted from <a class="reference external" href="https://github.com/chan-y-park/loom/blob/master/loom/spectral_network.py">loom/spectral_network.py</a>.</p>
+<div class="highlight"><pre><span></span><span class="n">get_intersections</span> <span class="o">=</span> <span class="n">libcgal_get_intersections</span><span class="p">()</span>
+
+<span class="n">intersections</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">buffer_size</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<span class="n">num_of_intersections</span> <span class="o">=</span> <span class="n">get_intersections</span><span class="p">(</span>
+    <span class="n">new_s_wall</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">n_z_i</span><span class="p">:</span><span class="n">n_z_f</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">(</span><span class="n">n_z_f</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">n_z_i</span><span class="p">),</span>
+    <span class="n">prev_s_wall</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">p_z_i</span><span class="p">:</span><span class="n">p_z_f</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">(</span><span class="n">p_z_f</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p_z_i</span><span class="p">),</span>
+    <span class="n">intersections</span><span class="p">,</span> <span class="n">buffer_size</span>
+<span class="p">)</span>
+</pre></div>
+<p>Note that we make a NumPy array <tt class="docutils literal">intersections</tt> from the Python side and give it to the C function so that the C function can save values into the array. As I mentioned previously, this is to avoid for the C function to allocate memory for the array. Memory management is often a pitfall when writing a C code, so it's better to leave it to Python, and in this way we don't have to worry about how to transfer dynamically allocated array from C-side to Python-side.</p>
+</div>
+<div class="section" id="using-struct">
+<h3>Using <tt class="docutils literal">struct</tt></h3>
+<p>So now we can exchange NumPy arrays between a Python program and a C program, which is useful to transfer data between the two. But when exchanging structured data, like messages, it is much better to associate a C struct with a Python class. A good reference of <tt class="docutils literal">ctypes</tt> for such a task is given in this Python documentation about <a class="reference external" href="https://docs.python.org/3/library/ctypes.html#structures-and-unions">struct in ctypes</a>. Here we discuss a Python interface for the following C struct defined in <a class="reference external" href="https://github.com/chan-y-park/loom/blob/master/loom/clibs/s_wall.h">loom/clibs/s_wall.h</a></p>
+<div class="highlight"><pre><span></span><span class="c1">// s_wall.h</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">s_wall_size</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">step</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">stop_condition</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">rv</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">message</span><span class="p">;</span>
+
+<span class="cp">#define ERROR_SAME_XS -1</span>
+<span class="cp">#define NEAR_PUNCTURE 1</span>
+<span class="cp">#define MASS_LIMIT 2</span>
+<span class="cp">#define IN_P_NBHD 3</span>
+<span class="cp">#define OUT_P_NBHD 4</span>
+
+<span class="kt">int</span> <span class="nf">grow</span><span class="p">(</span>
+    <span class="n">message</span><span class="o">*</span> <span class="n">msg</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">N</span><span class="p">,</span>
+    <span class="c1">// and more arguments...</span>
+<span class="p">);</span>
+</pre></div>
+<p>Using <tt class="docutils literal">message.rv</tt>, which will have one of the integer values defined by the constants in the header, Python-side and C function <tt class="docutils literal">grow()</tt> will exchange messages. A simplified version of the relevant Python code from <a class="reference external" href="https://github.com/chan-y-park/loom/blob/master/loom/ctypes_api.py">loom/ctypes_api.py</a> for such an interface is shown below.</p>
+<div class="highlight"><pre><span></span><span class="n">ERROR_SAME_XS</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">NEAR_PUNCTURE</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">MASS_LIMIT</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">IN_P_NBHD</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">OUT_P_NBHD</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;s_wall_size&#39;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;step&#39;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stop_condition&#39;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;rv&#39;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">error_same_xs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv</span> <span class="o">==</span> <span class="n">ERROR_SAME_XS</span>
+
+    <span class="k">def</span> <span class="nf">near_puncture</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv</span> <span class="o">==</span> <span class="n">NEAR_PUNCTURE</span>
+
+    <span class="k">def</span> <span class="nf">mass_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv</span> <span class="o">==</span> <span class="n">MASS_LIMIT</span>
+
+    <span class="k">def</span> <span class="nf">in_p_nbhd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv</span> <span class="o">==</span> <span class="n">IN_P_NBHD</span>
+
+    <span class="k">def</span> <span class="nf">out_p_nbhd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv</span> <span class="o">==</span> <span class="n">OUT_P_NBHD</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_same_xs</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;x1 == x2&#39;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">near_puncture</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;near a puncture&#39;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass_limit</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;reached the mass limit&#39;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_p_nbhd</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;inside the neighborhood of a point&#39;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_p_nbhd</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;outside the neighborhood of a point&#39;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;successfully finished&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span>
+
+        <span class="k">return</span> <span class="n">msg</span>
+
+<span class="n">clibs_s_wall</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">load_library</span><span class="p">(</span>
+    <span class="s1">&#39;s_wall&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span> <span class="o">+</span>
+     <span class="s1">&#39;/clibs/&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">clibs_s_wall_grow</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+
+<span class="n">clibs_s_wall_grow</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">ctypes</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">Message</span><span class="p">),</span>
+    <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>       <span class="c1"># int N</span>
+    <span class="c1"># and more arguments...</span>
+<span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">grow</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">clibs_s_wall_grow</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</pre></div>
+<p>That is, we inherit <tt class="docutils literal">ctypes.Structure</tt> to define a Python class corresponding to the C struct, and that is almost all the job we need to do. And we can enrich such a Python class to make it more convenient to use the class in Python as shown above. Because there is no neat way to expose a constant defined in a C header file via a shared library to Python (see <a class="reference external" href="http://stackoverflow.com/questions/18775389/is-there-a-way-to-load-the-constant-values-stored-in-a-header-file-via-ctypes">this</a> <a class="reference external" href="http://stackoverflow.com/questions/15293604/import-constants-from-h-file-into-python">and this</a> threads from stackoverflow), we define the same constant again in the Python code, but to avoid using the constants explicitly so that we can avoid making mistakes, a few helper functions are defined to identify the returned message. Then the reference to the class is given as a pointer to the C function, and in the middle is Python's <tt class="docutils literal">ctypes</tt> working so that the memory layout matches between the Python class and the C struct.</p>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<table class="docutils footnote" frame="void" id="numba-vs-ctypeslib" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><a class="reference external" href="./numba_vs_ctypeslib.html">Comparison between Numba and numpy.ctypeslib</a></td></tr>
+</tbody>
+</table>
+</div>
+
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Follow</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="http://github.com/chan-y-park"><i class="fa fa-github-square fa-lg"></i> GitHub</a></li>
+                <li class="list-group-item"><a href="http://www.linkedin.com/in/chan-youn-park-51a13b63"><i class="fa fa-linkedin-square fa-lg"></i> LinkedIn</a></li>
+                <li class="list-group-item"><a href="http://twitter.com/chan_y_park"><i class="fa fa-twitter-square fa-lg"></i> Twitter</a></li>
+                <li class="list-group-item"><a href="http://www.facebook.com/chan.y.park.5"><i class="fa fa-facebook-square fa-lg"></i> Facebook</a></li>
+              </ul>
+            </li>
+
+
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="http://getpelican.com/" target="_blank">
+                Pelican
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="http://chan.physics.rutgers.edu/loom" target="_blank">
+                loom
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="http://chan.physics.rutgers.edu/cproj" target="_blank">
+                cproj
+            </a>
+        </li>
+      </ul>
+    </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Chan Y. Park
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="./theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="./theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="./theme/js/respond.min.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+\documentclass[tikz]{standalone}
+\usepackage{caption,subcaption}
+%\usetikzlibrary{positioning}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{shapes.misc}
+\usetikzlibrary{intersections}
+\usetikzlibrary{arrows}
+\tikzset{>={latex}}
+\tikzstyle{X}=[cross out, draw, orange, scale = 0.75, thick]
+
+\begin{document}
+		\begin{tikzpicture}[scale=1]
+			\draw[fill=none] (-2,-2) rectangle (2,2);
+	
+			\node[X] (bp1) at (0,-1){};
+			\node[right, orange] at (bp1) {$\alpha_1$};
+	        \draw[dashed] (bp1) -- (0,-2);
+	        
+	        \node[left] at (0, -1.5) {$w_{\alpha_1}$};
+	        
+	        \node[X] (bp2) at (0, 1){};
+			\node[right, orange] at (bp2) {$\alpha_2$};
+	        \draw[dashed] (bp2) -- (0,2);
+	        
+	        \node[left] at (0, 1.5) {$w_{\alpha_2}$};
+
+		\end{tikzpicture}
+\end{document}

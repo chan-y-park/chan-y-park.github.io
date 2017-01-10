@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Fun with atomic force microscope - Chan's Blog</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="./atomic_force_microscope.html">
+
+        <meta name="author" content="Chan Y. Park" />
+        <meta name="description" content="The first time I learned of atomic force microscope (AFM) was during my first year of my undergraduate studies. I was looking for a research project, and firstly I contacted a few labs at the physics department but all I could hear was that no lab will take an undergraduate …" />
+
+        <meta property="og:site_name" content="Chan's Blog" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Fun with atomic force microscope"/>
+        <meta property="og:url" content="./atomic_force_microscope.html"/>
+        <meta property="og:description" content="The first time I learned of atomic force microscope (AFM) was during my first year of my undergraduate studies. I was looking for a research project, and firstly I contacted a few labs at the physics department but all I could hear was that no lab will take an undergraduate …"/>
+        <meta property="article:published_time" content="2017-01-09" />
+            <meta property="article:section" content="articles" />
+            <meta property="article:author" content="Chan Y. Park" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="./theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="./theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="./theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="./theme/css/style.css" type="text/css"/>
+        <link href="./static/custom.css" rel="stylesheet">
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="./" class="navbar-brand">
+Chan's Blog            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="./category/articles.html">Articles</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="./atomic_force_microscope.html"
+                       rel="bookmark"
+                       title="Permalink to Fun with atomic force microscope">
+                        Fun with atomic force microscope
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2017-01-09T18:15:39.451802-05:00"> Mon 09 January 2017</time>
+    </span>
+
+
+
+
+
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>The first time I learned of atomic force microscope (AFM) was during my first year of my undergraduate studies. I was looking for a research project, and firstly I contacted a few labs at the physics department but all I could hear was that no lab will take an undergraduate student by policy. Later I found that it was kind of implicit agreement among professors that they will not take any undergrad into their labs because they thought it as preoccupying students without the formal procedure of admitting graduate students and hire their students among the pool. I thought, and still think, it was an absurd policy, but there was nothing I can do about it. So I decided to start my own project with friends, and while browsing through Physics Today to find a topic of a project I found an article about atomic force microscopy, probably <a class="reference external" href="http://dx.doi.org/10.1063/1.881238">this article</a>. The article was quite interesting and clear that I misleadingly thought that building one would be easy enough to be a good a project for freshmen. Of course I was totally wrong, we could not even get the necessary equiments and ingredients letting alone building one. That was my first bittersweet experience with atomic force microscope.</p>
+<p>Then a few years later, when I was looking for a company to work for my alternative service after <a class="reference external" href="./query_recommendation.html">the meltdown of the team at the first company I had worked for a year</a>, I came to contact with PSIA (now <a class="reference external" href="http://www.parkafm.com/">Park Systems</a>), a company developing and building commercial AFM. I had known the company before, because one of my friends contacted PSIA to get some material to build an AFM when we were trying to do our own research project. But I did not know that they were hiring people for alternative service (as I wrote in <a class="reference external" href="./query_recommendation.html">this post</a> a company should be registered by the ministry of defence to able to hire alternative service employees). And I don't remember how I found that out and whom at the company I contacted to. Anyway, I went through an interview, got a position there fortunately, and moved to the new poisition in October 2004.</p>
+<p>I was very thrilled for the new position for two reasons. Firstly the main product of this company is AFM, which aligns more closely with my major, physics. Even though I already made my mind at that time that I will study theoretical physics, especially string theory, but still the idea of working with AFM was quite exciting. Secondly, I was told that the project I would work on was porting an OS to a new AFM controller system, and that was exactly what I wanted to work on, that is working at the interface between hardware and software of AFM, so that I can learn both aspects.</p>
+<p>Again I was quite lucky because the members at my team were very smart and had great knowledge on electronics and programming: many of them were majoring or majored in engineering like EE and CS, and some were physics majors with ample experience in such subjects. And there was no nasty character in the team (well, there were a few interesting people but all good-meaning) so it was very pleasant to work in the team.</p>
+<div class="section" id="how-afm-works">
+<h2>How AFM works</h2>
+<p>Before going into the projects that I worked on at PSIA, let me first briefly describe how an AFM works, probably focusing more on how the AFM I had worked with operates.</p>
+<object class="align-center" data="./figures/afm_diagram.svg" style="width: 400px;" type="image/svg+xml">
+AFM diagram</object>
+<p>The idea is quite simple: AFM measures the topography of a sample by scanning a nanoscale tip attached to the end of a microscale cantiliever sample against the surface of the sample and then reading out the movement of the cantilever. To measure the movement, the top of the cantiliever is mirror-coated and a laser beam is focused onto the mirror surface, and along the path of the reflected laser beam a photodiodes that converts the displacement of the light signal into electric signal is installed. The movements of the cantilever and the sample stage is controlled by <a class="reference external" href="https://en.wikipedia.org/wiki/Piezoelectricity">piezoelectric</a> elements, which turns electric current into physical movement and vice versa. For more detail, see <a class="reference external" href="https://en.wikipedia.org/wiki/Atomic-force_microscopy">this wikipedia page about AFM</a>.</p>
+<p>The photodiode, the sample stage, and the cantilever are hooked up to an electronic controller that forms a feedback loop, and to scan a sample as fast as possible the electrinics should operate as fast as posiible. That was the main area that I worked on during my time at PSIA.</p>
+</div>
+<div class="section" id="under-the-hood-of-an-os-kernel">
+<h2>Under the hood of an OS kernel</h2>
+<p>The first project that I participated when I started working at PSIA was porting <a class="reference external" href="https://en.wikipedia.org/wiki/NetBSD">NetBSD</a>, an open-source, Unix-like operating system, to the electronic system and developing any device driver required for it.</p>
+<p>Before this project the AFM was being controlled by a <a class="reference external" href="https://en.wikipedia.org/wiki/Digital_signal_processor">digital signal processor (DSP)</a>. But to make the electric feedback loop to operate faster, a standalone system was being developed when I moved to PSIA, and the DSP was planned to be one of the devices of the system.</p>
+<p>Our team was developing the system based on Motorola Sandpoint reference platform. According to <a class="reference external" href="http://wiki.netbsd.org/ports/sandpoint/">the wiki page of NetBSD/sandpoint</a>, the system is &quot;a reference platform designed by Motorola to help people develop hardware and software around various PowerPC processors. The basic system is an ATX form-factor motherboard with standard PC devices (IDE, floppy, serial, parallel), 4 PCI slots, and a mezzanine slot to which several different processor modules may be attached.&quot;</p>
+<p>The plan was attaching the DSP to the CPU via PCI for speed and throughput, and the system to a user via USB. This plan was laid out before I joined the team, so there were several product design decisions made that I do not know exactly</p>
+<p>The electronic system was designed before I joined the team, so I do not know what lies behind the decisions and in what order the decisions are made, and at this point I feel curious about a few points. Firstly, was it the Motorola PowerPC CPU that was chosen as the centerpiece of the system and then the reference system and the OS to port were chosen? Or was the Sandpoint reference system chosen for the design of the electronics system and then the rest followed? My guess is that actually NetBSD was chosen as the OS to run the system and then the Sandpoint reference system with a PowerPC CPU were selected, and the reason is the leader of my team was deeply in love with NetBSD. There was nothing wrong about it, I also think NetBSD is a lovely OS for a cutom-built system as it focused on portability. The only issue was that PSIA wanted to have Linux as the OS to put on the new electronics system, largely because the sales team thought Linux sounded fancier to customers. And it seemed that there was an effort in running Linux on the system prior to my joining the team, because there was a broken code of Linux device driver for the system when I started working on the project that I was able to use as a reference. Because of the conflict of the preferences, my team pushed the project without announcing that actually we are working on NetBSD rather than Linux until after the point where the project was almost completed so that the decision could not be reversed.</p>
+<p>Another question is the decision of using USB 1.0 for the interface between the AFM electronics system and a user computer to transfer data between the two. Because USB 1.0 was not so fast, especially compared to PCI between the CPU and the DSP, it was evident from the beginning that it would be the bottleneck. It seemed more natural to me to use an ethernet connection. Not only it was much faster than USB 1.0, there would have been less work in developing the device driver for the interface. But on the other hand I can understood why such a decision was made, largely pushed by the sales team: to someone who does not know much about computer systems, connecting a device using a USB cable makes more sense than installing an additional ethernet card to a user computer and then getting the right ethernet cable to hook up the AFM to the computer, and a USB cables looks fancier than an ethernet cable, whose plastic clip is notoriously fragile. Nowadays USB got much faster so probably the decision was a right one in retrospect. Actually around the end of the project USB 2.0 became available and we discussed whether to introduce it to the system. We dropped the idea after fidning out that it would require quite an amount of additional work on the device driver side because USB 2.0 interface has its own microprocessor to control the much faster data transfer on the same old physical interface.</p>
+<p>So my task was basically make NetBSD work on the newly built system. It's a pity that I do not have any record of my work during that period. I remember giving a presentation about how the ported version of NetBSD worked on the system in front of everyone at PSIA to provide an overview, and for that event I even drew a few pretty diagrams. All that were lost when my computer and backup hard drive were broken down many years ago. Amusingly, while I was searching through the internet to remind myself of what I was doing during that time period, I found two threads in the NetBSD mailing list for Sandpoint systems that I started! One was about <a class="reference external" href="http://mail-index.netbsd.org/port-sandpoint/2005/02/01/msg000133.html">NFS mounting</a>, where I discovered a boot-up message of the system that I copy-pasted to the thread that contains quite a few details of the system. (Kudos to myself of two decades ago.)</p>
+<div class="highlight"><pre><span></span>Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+The NetBSD Foundation, Inc. All rights reserved.
+Copyright (c) 1982, 1986, 1989, 1991, 1993
+The Regents of the University of California. All rights reserved.
+
+NetBSD 1.6.2 (XEPRO-$Revision: 1.2 $) #1: Mon Jan 31 17:43:58 KST 2005
+phygeeks%netbsd.psia.co.kr@localhost:/home/phygeeks/netbsd/src/sys/arch/sandpoint/comp
+ile/XEPRO
+total memory = 128 MB
+avail memory = 115 MB
+using 1664 buffers containing 6656 KB of memory
+mainbus0 (root)
+cpu0 at mainbus0: 8245 (Revision 0.4), ID 0 (primary)
+cpu0: HID0 90c000&lt;DOZE,DPM,ICE,DCE&gt;
+pci0 at mainbus0 bus 0
+pci0: i/o space, memory space enabled
+pchb0 at pci0 dev 0 function 0
+pchb0: Motorola MPC8245 Host Bridge (rev. 0x12)
+tdsp0 at pci0 dev 16 function 0: Texas Instruments TMS320C6415 DSP, rev 1
+tdsp0: interrupting at irq 0
+tdsp0: emifb config addr=0x280000 val=0x1270c
+tdsp0: emifb config addr=0x280018 val=0x62117000
+tdsp0: emifb config addr=0x28001c val=0x25e6600
+tdsp0: emifb config addr=0x280008 val=0xffffff1f
+tdsp0: emifb config addr=0x280004 val=0xffffff1f
+tdsp0: emifb config addr=0x280010 val=0x90
+tdsp0: emifb config addr=0x280014 val=0x90
+tdsp0: emifb config addr=0x280048 val=0x47
+tdsp0: emifb config addr=0x280044 val=0x47
+tdsp0: emifb config addr=0x280050 val=0x47
+tdsp0: emifb config addr=0x280054 val=0x47
+tdsp intr before src = 00000880 mask = 00000008 hsr = 00000004
+rstsrc = 00000023
+tdsp intr after src = 00000000 mask = 00000008 hsr = 00000004
+rstsrc = 00000020
+fxp0 at pci0 dev 17 function 0: i82550 Ethernet, rev 16
+fxp0: interrupting at irq 1
+fxp0: Ethernet address 00:03:47:97:d0:89
+inphy0 at fxp0 phy 1: i82555 10/100 media interface, rev. 4
+inphy0: 10baseT, 10baseT-FDX, 100baseTX, 100baseTX-FDX, auto
+eumb0 at mainbus0
+com0 at eumb0 base=0xfc004500 irq=20: ns16550a, working fifo
+com0: console
+lbus0 at mainbus0 cpld ver. 2.0
+usbn0 at lbus0 base=0xe00000 irq=4 rev A
+biomask 0 netmask 3 ttymask 3
+boot device: &lt;unknown&gt;
+root on fxp0
+nfs_boot: trying RARP (and RPC/bootparam)
+nfs_boot: client_addr=211.240.96.118 (RARP from 211.240.96.99)
+nfs_boot: server_addr=211.240.96.99
+nfs_boot: hostname=xepro
+nfs_boot: gateway=211.240.96.1
+nfs_boot: my_mask=255.255.255.128
+root on netbsd.psia.co.kr:/usr/cross/xepro/root
+</pre></div>
+<p>We can see that the system was running on Motorola PowerPC MPC8245, with Texas Instruments TMS320C6415 DSP attached to it via PCI and with a handful of memory, 128 MB. It had a few connections: ethernet, USB, and a serial port. In the mailing thread I was asking a question about how to mount a network file system (NFS) to the system. The system did not have any storage, i.e. a hard disk, attached to it, which is reasonable considering that it is just a electronic controller system of an AFM, but it made my life hard when debugging the system. So I wanted to hook up a file system remotely via the ethernet connection and I had difficult to make it work when I posted the question. Sadly though, I couldn't get any answer for the question from the community, although I remember somehow I made it and even was able to compile C codes on the system using gcc to build small test programs.</p>
+<p>The second question was about <a class="reference external" href="http://mail-index.netbsd.org/port-sandpoint/2005/03/18/msg000134.html">NetBSD's support on removable flash ROM</a> and it has to do with bootstrapping the CPU for the kernel boot-up. A CPU is like a knight in a shining armor: it is powerful and can do many things, but because of all the weight of the armor it requires some help in putting itself up to the saddle (but a bit of googling shows a few claim that this hoisting a knight onto a horse is a myth; I do not have any expertise on the topic of medieval equestrian tech), and the prep is done by a small program called a bootloader, which is typically written on a ROM, a bootrom. My first subproject was studying both the boot sequence of the MPC8245 from the thick <a class="reference external" href="http://www.nxp.com/assets/documents/data/en/reference-manuals/MPC8245UM.pdf?&amp;fpsp=1">user manual</a> and also reverse-engineer a bootloader binary into a C code. This gave me an impression that modern day electronics are much like the great mechanical swiss watches but use silcon and electrons instead of metal and gears. I am not saying this not in a pejorative sense at all, I rather came to admire both of them in how they work and how people have designed such amazing gadgets. The bootloader was &quot;burned&quot; onto an erasable programmable ROM (EPROM) and then was installed on the system, and there was a discussion around the end of the project whether to replace the EPROM with an SD card, so that PSIA can distribute an update of the bootloader via a form of an SD card instead of an ugly-looking EPROM. Again this was not at all about functionality but was about marketing and sales, so everyone in the team was not much thrilled to the idea. Anyway I was investigating the possibility of developing a device driver for the SD card interface when I was asking the question in the thread. Fortunately I got a few responses from the developer community compared to the zero response for the previous question, but in the end the idea of using an SD card was killed, much to my joy.</p>
+<p>NetBSD was wonderful in the sense that almost all the necessary ingredients for building an OS for our system was there, I just needed to understand how to put all the pieces together around the kernel of NetBSD and then build a program to run as a daemon process to transfer data from AFM via DSP to the CPU and then from the CPU to the user computer via USB. It was quite a fun project to work on as it provided me an opportunity to take a glimpse of how an OS kernel works and also to read good C codes that gave me an idea that a good code should speak itself not via comments but through the code itself.</p>
+</div>
+<div class="section" id="spring-constant-of-cantilevers">
+<h2>Spring constant of cantilevers</h2>
+<p>So much so about the first project, and after wrapping it up I was out of company for four weeks due to the basic military training, which was not a pleasant way to celebrate the end of a project but was a good deadline because there was no way to postpone the training.</p>
+<p>With all the sunburn I got from the training I returned to the company to find out that there was another project waiting for me, and this looked even more fun. It was about measuring the spring constant of an AFM cantilever, developing a prototype of a module for the task. This involved a basic physics of <a class="reference external" href="https://en.wikipedia.org/wiki/Hooke's_law">Hooke's law</a>, but however basic it was, I liked tha idea of getting back to a physics experiment afer being away from the university for about two years.</p>
+<p>It was necessary to measure the spring constant of a cantilever to calculate the force exerted by the cantilever from the displacement of the tip of the cantilever, which in turn could be used to understand the material properties of the sample being pushed and/or pulled by the cantilever.</p>
+<p>One basic method of obtaining a spring constant of a cantilever is measuring the thermal noise in the signal of the deflected laser beam off from the cantilever. If we assume that a cantilever is an ideal spring with one degree of freedom, when it is in the room temperature it gets thermal energy from the atmosphere (the AFM is neither cooled nor in a vacumm), therefore by measuring the amplitude of the displacement of the cantilever we can calculate the spring constant as</p>
+<div class="math">
+\begin{equation*}
+k = \frac{k_\text{B} T}{\langle x^2 \rangle},
+\end{equation*}
+</div>
+<p>where <span class="math">\(k_\text{B}\)</span> is <a class="reference external" href="https://en.wikipedia.org/wiki/Boltzmann_constant">the Boltzman constant</a>, <span class="math">\(T\)</span> is the temperature, and <span class="math">\(\langle x^2 \rangle\)</span> is the mean square of the amplitude of the thermal osciallation of a cantilever. Of course a cantilever is not an ideal spring, therefore to get a more precise estimation we need to get the physical dimensions (length, width, thickness, etc) of a cantilever and its material properties (like Young's modulus) to build a mechanical model of the cantilever and then obtain a formula for the spring constant, see <a class="reference external" href="http://www.physics.uwo.ca/~hutter/calibration/afmcal.html">this nice summary on the web</a>.</p>
+<p>In practice what is needed is to measure the signal from the photodiodes with a cantilever hung in the air, run a <a class="reference external" href="https://en.wikipedia.org/wiki/Fourier_transform">Fourier transform</a> of the signal to get the power spectrum of the signal, which will display a nice peak around the resonance frequence of the cantilever, and estimate the amplitude from the data. This requires a good analog-to-digital converter (ADC) to read out the electric signal from the photodiodes, and that is what had been lacked before in the sense that there was no commercially available ADC with a resonable pricetag. But that had changed around that time, and we were able to get a hand on National Instrument (NI) data acqusition module and it did its job. I also enjoyed doing some hardware programming with NI Measurement Studio library for Visual C++, which showed me the usefulness of C++ library in distributing commercial libraries.</p>
+<p>The thermal calibration method is useful because it just requires an ADC and a bit of modeling and programming to get a spring constant of any cantilever installed on an AFM, but it has a not-so-small error of about 10%. So there had been much research about easy but more accurate calibration methods, and at that time PSIA was able to collaborate with National Physics Laboratory in the UK (which is the UK counterpart of NIST) to get a microfabricated array of standard springs.</p>
+<p>The idea is again simple. There is an array of springs with known spring constants. Each spring is attached to a platform so that a cantilever can be pushed onto the platform. When there is still a traveling distance remaining in the spring, the cantilever and the spring will act like two springs connected in series. After the spring is pushed down to the bottom, there is no contribution from the spring, therefore there is a discontinuity in the displacement signal of the cantilever. By measuring the slopes before and after the discontinuity and using the spring constant of the standard spring, we can calculate the spring constant of a cantilever, typically with 5% accuracy. For more detail see <a class="footnote-reference" href="#cumpson" id="id1">[1]</a>. The spring array was of the scale of micrometers and was made out of silicon. They were surprisingly robust as to be able to be shipped from the UK to PSIA in Korea via post mail with just a bubble wrap around it. But I was clumsy enough to break 5 out of 10 springs by dropping it onto the floor. At that time I was working with a guy from a quality control (QC) team and he was taking care of measuring spring constants using the arrays while I was developing a thermal calibration module, and if I were him I would have been quite mad toward a brat who came into my room and broke half of crucial instruments by just being not careful enough. But he did not show any hostility toward me for my carelessness. I was really thankful for him and we remained good friends.</p>
+<p>But the spring arrays were not commercially available at that time, so what we did was to compare a thermal calibration against the result from using a spring array and see if we could get a reasonable result. Actually they agreed within the expected error, so we declared victory and started shipping an additional module for a thermal calibration.</p>
+</div>
+<div class="section" id="epilogue">
+<h2>Epilogue</h2>
+<p>After the two projects, it was already the time that I finished my civilian service. Although I could continue working at the company, which many other people at PSIA on the same service did, I decided to go back to my undergraduate study. Of course I had to graduate but there was always an option of working as a part-time until graduation and then come back to the company, but I made my mind at that time that I would study string theory in a graduate school. I indeed made it to a graduate school and did my Ph.D. studies on string theory. Was it fortunate or unfortunate? It's hard to tell. But at least I enjoyed my time doing research in string theory, as I enjoyed my various projects at Softwise and at PSIA during my years of alternative civilian service.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<table class="docutils footnote" frame="void" id="cumpson" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="http://stacks.iop.org/Nano/14/1279">http://stacks.iop.org/Nano/14/1279</a></td></tr>
+</tbody>
+</table>
+</div>
+<script type='text/javascript'>if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    var location_protocol = (false) ? 'https' : document.location.protocol;
+    if (location_protocol !== 'http' && location_protocol !== 'https') location_protocol = 'https:';
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Follow</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="http://github.com/chan-y-park"><i class="fa fa-github-square fa-lg"></i> GitHub</a></li>
+                <li class="list-group-item"><a href="http://www.linkedin.com/in/chan-youn-park-51a13b63"><i class="fa fa-linkedin-square fa-lg"></i> LinkedIn</a></li>
+                <li class="list-group-item"><a href="http://twitter.com/chan_y_park"><i class="fa fa-twitter-square fa-lg"></i> Twitter</a></li>
+                <li class="list-group-item"><a href="http://www.facebook.com/chan.y.park.5"><i class="fa fa-facebook-square fa-lg"></i> Facebook</a></li>
+              </ul>
+            </li>
+
+
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="http://getpelican.com/" target="_blank">
+                Pelican
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="http://chan.physics.rutgers.edu/loom" target="_blank">
+                loom
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="http://chan.physics.rutgers.edu/cproj" target="_blank">
+                cproj
+            </a>
+        </li>
+      </ul>
+    </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Chan Y. Park
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="./theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="./theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="./theme/js/respond.min.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+body {
+    // font-family: "PT Serif", Georgia, Times, "Times New Roman", serif;
+    font-size: 16px;
+}
+a.reference.external {
+    border-bottom: solid 1px;
+    color: blue;
+}
+a.fn-backref{
+    border-bottom: none;
+    color: blue;
+}
+td.label{
+    padding-top: 0px;
+}
