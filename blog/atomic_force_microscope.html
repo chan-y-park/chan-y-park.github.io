@@ -13,7 +13,7 @@
 <link rel="canonical" href="./atomic_force_microscope.html">
 
         <meta name="author" content="Chan Y. Park" />
-        <meta name="keywords" content="professional experience,NetBSD,AFM" />
+        <meta name="keywords" content="experience,NetBSD,AFM" />
         <meta name="description" content="The first time I learned of atomic force microscope (AFM) was during my first year of my undergraduate studies. I was looking for a research project, and firstly I contacted a few labs at the physics department but all I could hear was that no lab will take an undergraduate …" />
 
         <meta property="og:site_name" content="Chan's Blog" />
@@ -21,9 +21,9 @@
         <meta property="og:title" content="Fun with atomic force microscope"/>
         <meta property="og:url" content="./atomic_force_microscope.html"/>
         <meta property="og:description" content="The first time I learned of atomic force microscope (AFM) was during my first year of my undergraduate studies. I was looking for a research project, and firstly I contacted a few labs at the physics department but all I could hear was that no lab will take an undergraduate …"/>
-        <meta property="article:published_time" content="2017-01-09" />
+        <meta property="article:published_time" content="2017-01-10" />
             <meta property="article:section" content="articles" />
-            <meta property="article:tag" content="professional experience" />
+            <meta property="article:tag" content="experience" />
             <meta property="article:tag" content="NetBSD" />
             <meta property="article:tag" content="AFM" />
             <meta property="article:author" content="Chan Y. Park" />
@@ -90,7 +90,7 @@ Chan's Blog            </a>
 <footer class="post-info">
     <span class="label label-default">Date</span>
     <span class="published">
-        <i class="fa fa-calendar"></i><time datetime="2017-01-09T22:03:08.209131-05:00"> Mon 09 January 2017</time>
+        <i class="fa fa-calendar"></i><time datetime="2017-01-10T10:17:57.555194-05:00"> Tue 10 January 2017</time>
     </span>
 
 
@@ -98,7 +98,7 @@ Chan's Blog            </a>
 
 
 <span class="label label-default">Tags</span>
-	<a href="./tag/professional-experience.html">professional experience</a>
+	<a href="./tag/experience.html">experience</a>
         /
 	<a href="./tag/netbsd.html">NetBSD</a>
         /
@@ -200,8 +200,8 @@ k = \frac{k_\text{B} T}{\langle x^2 \rangle},
 </div>
 <p>where <span class="math">\(k_\text{B}\)</span> is <a class="reference external" href="https://en.wikipedia.org/wiki/Boltzmann_constant">the Boltzman constant</a>, <span class="math">\(T\)</span> is the temperature, and <span class="math">\(\langle x^2 \rangle\)</span> is the mean square of the amplitude of the thermal osciallation of a cantilever. Of course a cantilever is not an ideal spring, therefore to get a more precise estimation we need to get the physical dimensions (length, width, thickness, etc) of a cantilever and its material properties (like Young's modulus) to build a mechanical model of the cantilever and then obtain a formula for the spring constant, see <a class="reference external" href="http://www.physics.uwo.ca/~hutter/calibration/afmcal.html">this nice summary on the web</a>.</p>
 <p>In practice what is needed is to measure the signal from the photodiodes with a cantilever hung in the air, run a <a class="reference external" href="https://en.wikipedia.org/wiki/Fourier_transform">Fourier transform</a> of the signal to get the power spectrum of the signal, which will display a nice peak around the resonance frequence of the cantilever, and estimate the amplitude from the data. This requires a good analog-to-digital converter (ADC) to read out the electric signal from the photodiodes, and that is what had been lacked before in the sense that there was no commercially available ADC with a resonable pricetag. But that had changed around that time, and we were able to get a hand on National Instrument (NI) data acqusition module and it did its job. I also enjoyed doing some hardware programming with NI Measurement Studio library for Visual C++, which showed me the usefulness of C++ library in distributing commercial libraries.</p>
-<p>The thermal calibration method is useful because it just requires an ADC and a bit of modeling and programming to get a spring constant of any cantilever installed on an AFM, but it has a not-so-small error of about 10%. So there had been much research about easy but more accurate calibration methods, and at that time PSIA was able to collaborate with National Physics Laboratory in the UK (which is the UK counterpart of NIST) to get a microfabricated array of standard springs.</p>
-<p>The idea is again simple. There is an array of springs with known spring constants. Each spring is attached to a platform so that a cantilever can be pushed onto the platform. When there is still a traveling distance remaining in the spring, the cantilever and the spring will act like two springs connected in series. After the spring is pushed down to the bottom, there is no contribution from the spring, therefore there is a discontinuity in the displacement signal of the cantilever. By measuring the slopes before and after the discontinuity and using the spring constant of the standard spring, we can calculate the spring constant of a cantilever, typically with 5% accuracy. For more detail see <a class="footnote-reference" href="#cumpson" id="id1">[1]</a>. The spring array was of the scale of micrometers and was made out of silicon. They were surprisingly robust as to be able to be shipped from the UK to PSIA in Korea via post mail with just a bubble wrap around it. But I was clumsy enough to break 5 out of 10 springs by dropping it onto the floor. At that time I was working with a guy from a quality control (QC) team and he was taking care of measuring spring constants using the arrays while I was developing a thermal calibration module, and if I were him I would have been quite mad toward a brat who came into my room and broke half of crucial instruments by just being not careful enough. But he did not show any hostility toward me for my carelessness. I was really thankful for him and we remained good friends.</p>
+<p>The thermal calibration method is useful because it just requires an ADC and a bit of modeling and programming to get a spring constant of any cantilever installed on an AFM, but it has a not-so-small error of about 10%. So there had been much research about easy but more accurate calibration methods, and at that time PSIA was able to collaborate with National Physics Laboratory in the UK (which is the UK counterpart of NIST) to get a microfabricated array of reference springs.</p>
+<p>The idea is again simple. There is an array of springs with known spring constants. Each spring is attached to a platform so that a cantilever can be pushed onto the platform. When there is still a traveling distance remaining in the spring, the cantilever and the spring will act like two springs connected in series. After the spring is pushed down to the bottom, there is no contribution from the spring, therefore there is a discontinuity in the displacement signal of the cantilever. By measuring the slopes before and after the discontinuity and using the spring constant of the reference spring, we can calculate the spring constant of a cantilever, typically with 5% accuracy. For more detail see <a class="footnote-reference" href="#cumpson" id="id1">[1]</a>. The spring array was of the scale of micrometers and was made out of silicon. They were surprisingly robust as to be able to be shipped from the UK to PSIA in Korea via post mail with just a bubble wrap around it. But I was clumsy enough to break 5 out of 10 springs by dropping it onto the floor. At that time I was working with a guy from a quality control (QC) team and he was taking care of measuring spring constants using the arrays while I was developing a thermal calibration module, and if I were him I would have been quite mad toward a brat who came into my room and broke half of crucial instruments by just being not careful enough. But he did not show any hostility toward me for my carelessness. I was really thankful for him and we remained good friends.</p>
 <p>But the spring arrays were not commercially available at that time, so what we did was to compare a thermal calibration against the result from using a spring array and see if we could get a reasonable result. Actually they agreed within the expected error, so we declared victory and started shipping an additional module for a thermal calibration.</p>
 </div>
 <div class="section" id="epilogue">
