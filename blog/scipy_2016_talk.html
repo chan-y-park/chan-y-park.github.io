@@ -13,7 +13,7 @@
 <link rel="canonical" href="./scipy_2016_talk.html">
 
         <meta name="author" content="Chan Y. Park" />
-        <meta name="keywords" content="python,scipy 2016,string theory" />
+        <meta name="keywords" content="python,scipy 2016,string theory,experience" />
         <meta name="description" content="MathJax.Hub.Config({ TeX: { Macros: { cH: &#34;{\\mathcal{H}}&#34;, cP: &#34;{\\mathcal{P}}&#34;, cS: &#34;{\\mathcal{S}}&#34;, cK: &#34;{\\mathcal{K}}&#34;, cM: &#34;{\\mathcal{M}}&#34;, cN: &#34;{\\mathcal{N}}&#34;, cW: &#34;{\\mathcal{W}}&#34;, cX: &#34;{\\mathcal{X}}&#34;, SU: &#34;{\\mathrm{SU}}&#34;, SO: &#34;{\\mathrm{SO}}&#34;, Sp: &#34;{\\mathrm{Sp}}&#34;, UU: &#34;{\\mathrm{U}}&#34;, fg: &#34;{\\mathfrak{g}}&#34;, ft: &#34;{\\mathfrak{t}}&#34;, gA: &#34;{\\mathrm{A …" />
 
         <meta property="og:site_name" content="Chan's Blog" />
@@ -26,6 +26,7 @@
             <meta property="article:tag" content="python" />
             <meta property="article:tag" content="scipy 2016" />
             <meta property="article:tag" content="string theory" />
+            <meta property="article:tag" content="experience" />
             <meta property="article:author" content="Chan Y. Park" />
 
 
@@ -60,6 +61,9 @@ Chan's Blog            </a>
             <ul class="nav navbar-nav">
                         <li class="active">
                             <a href="./category/articles.html">Articles</a>
+                        </li>
+                        <li >
+                            <a href="./category/loom_plots.html">Loom_plots</a>
                         </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -103,6 +107,8 @@ Chan's Blog            </a>
 	<a href="./tag/scipy-2016.html">scipy 2016</a>
         /
 	<a href="./tag/string-theory.html">string theory</a>
+        /
+	<a href="./tag/experience.html">experience</a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
@@ -156,14 +162,14 @@ Chan's Blog            </a>
 <h2>Crash course: string theory</h2>
 <div class="section" id="what-is-string-theory">
 <h3>What is string theory?</h3>
-<img alt="strings and D-branes" class="align-center" src="figures/strings_and_D_branes.png" style="width: 400px;" />
+<img alt="strings and D-branes" class="align-center" src="./figures/loom_scipy_2016/strings_and_D_branes.png" style="width: 400px;" />
 <p>So, let me start by telling you what a string theory is.</p>
 <p>More commonly known as theoretical particle physics, high-energy theory is a study to understand the fundamental forces of the universe, and you may have heard of the four: electromagnetic force, weak force, strong force, and gravity.</p>
 <p><strong>String theory</strong> is part of high energy theory. It started as a candidate theory of quantum gravity, and now it’s evolved into a field of study to build <strong>a physical and mathematical framework to describe the fundamental forces in a unified way</strong>.</p>
 </div>
 <div class="section" id="why-computational-analysis-in-string-theory">
 <h3>Why computational analysis in string theory?</h3>
-<img alt="cat and strings" class="align-center" src="figures/cat_and_strings.jpg" style="width: 400px;" />
+<img alt="cat and strings" class="align-center" src="./figures/loom_scipy_2016/cat_and_strings.jpg" style="width: 400px;" />
 <p>Then why are string theorists interested in computational analysis in tackling questions of mathematical nature?</p>
 <p>Indeed string theorists want to find a mathematical and exact result.</p>
 <p>However, such a beautiful moment that we have a concise and exact formula for a question rarely happens because many problems in string theory pose significant challenges to a traditional pen-and-paper approach.</p>
@@ -172,7 +178,7 @@ Chan's Blog            </a>
 </div>
 <div class="section" id="string-theory-and-m-theory">
 <h3>String theory and M-theory</h3>
-<object class="align-center" data="figures/corners_of_string_theory.svg" type="image/svg+xml">
+<object class="align-center" data="./figures/loom_scipy_2016/corners_of_string_theory.svg" type="image/svg+xml">
 coners of string theory</object>
 <p>Then let me introduce a few concepts from string theory that will appear in this post.</p>
 <p>The first one is M-theory, which is sometimes called the mother of all string theories, because various string theories are believed to be different limits of M-theory.</p>
@@ -194,7 +200,7 @@ M \geq \left| Z \right|,
 </div>
 <div class="section" id="supersymmetric-gauge-theory-from-m5-branes">
 <h3>Supersymmetric gauge theory from M5-branes</h3>
-<object class="align-center" data="figures/2_plus_4_M5.svg" type="image/svg+xml">
+<object class="align-center" data="./figures/loom_scipy_2016/2_plus_4_M5.svg" type="image/svg+xml">
 2 plus 4 M5</object>
 <p>What we are going to do with those M-branes is we wrap them on a two-dimensional surface, more precisely a Riemann surface with punctures.</p>
 <p>When we wrap <span class="math">\(N\)</span> M5-branes on a punctured Riemann surface <span class="math">\(C\)</span>, we obtain a 4d superysymmetric gauge theory, more precisely <span class="math">\(\mathcal{N}=2\)</span> <span class="math">\(\mathrm{SU}(N)\)</span> theory of class <span class="math">\(S\)</span>. <a class="footnote-reference" href="#gaiotto-2009" id="id1">[1]</a> <a class="footnote-reference" href="#gaiotto-moore-neitzke-2009" id="id2">[2]</a></p>
@@ -208,7 +214,7 @@ M \geq \left| Z \right|,
 </div>
 <div class="section" id="supersymmetric-particles-from-m2-branes">
 <h3>Supersymmetric particles from M2-branes</h3>
-<object class="align-center" data="figures/2_plus_4_M2_M5.svg" type="image/svg+xml">
+<object class="align-center" data="./figures/loom_scipy_2016/2_plus_4_M2_M5.svg" type="image/svg+xml">
 2 plus 4 M2 M5</object>
 <p>So we got a theory, but what about particles living in the theory?</p>
 <p>A supersymmetric particle comes from an M2-brane whose boundary ends along a closed curve <span class="math">\(\gamma \in H_1(\Sigma; \mathbb{Z})\)</span> on the two-dimensional Riemann surface <span class="math">\(Sigma\)</span>. <a class="citation-reference" href="#henningson-yi-1997" id="id4">[Henningson-Yi_1997]</a> <a class="citation-reference" href="#mikhailov-1997" id="id5">[Mikhailov_1997]</a></p>
@@ -235,24 +241,24 @@ M = |Z|,\ Z = \oint_\gamma \lambda.
 <p>First let me remind you what we learned in a high-school science class about spectroscopy. When we put a small amout of chemical compound into a torch we see a flame, and its color tells us about an atomic element in the compound. This is flame test, a qualitative method to identify an element.</p>
 <div style="display: block; margin: 1em auto 1em; height: 125px; width: 200px;">
     <div style="text-align: center; float: left;">
-        <img src="figures/flametest_Cu.jpg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 100px;"/>
+        <img src="./figures/loom_scipy_2016/flametest_Cu.jpg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 100px;"/>
         <br/>
         Cu
     </div>
     <div style="text-align: center; float: right;">
-        <img src="figures/flametest_Na.jpg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 100px;"/>
+        <img src="./figures/loom_scipy_2016/flametest_Na.jpg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 100px;"/>
         <br/>
         Na
     </div>
 </div><p>More quantitatively we can use a diffraction grating to the light of the flame to obtain an emission spectrum to identify an atomic element.</p>
 <div style="display: block; margin: 1em auto 1em; height: 75px; width: 650px;">
     <div style="text-align: center; float: left;">
-        <img src="figures/emission_spectrum_Cu.jpg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 50px; width: 300px;"/>
+        <img src="./figures/loom_scipy_2016/emission_spectrum_Cu.jpg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 50px; width: 300px;"/>
         <br/>
         Cu
     </div>
     <div style="text-align: center; float: right;">
-        <img src="figures/emission_spectrum_Na.jpg" style="background:none; border:none; box-shadow:none; vertical-align:middle; height: 50px; width: 300px;"/>
+        <img src="./figures/loom_scipy_2016/emission_spectrum_Na.jpg" style="background:none; border:none; box-shadow:none; vertical-align:middle; height: 50px; width: 300px;"/>
         <br/>
         Na
     </div>
@@ -261,22 +267,22 @@ M = |Z|,\ Z = \oint_\gamma \lambda.
 <h3>Supersymmetric spectroscopy via spectral network</h3>
 <div style="display: block; margin: 1em auto 250px; width: 650px;">
     <div style="text-align: center; float: left;">
-        <img src="figures/AD_of_SU_3_N_f_2_SU_3_f_maximal_symmetric_SN_near_triplet.svg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 200px; width: 200px;"/>
+        <img src="./figures/loom_scipy_2016/AD_of_SU_3_N_f_2_SU_3_f_maximal_symmetric_SN_near_triplet.svg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 200px; width: 200px;"/>
         <br/>
         <p id="caption">spectral network</p>
     </div>
     <div style="text-align: center; float: left;">
-        <img src="figures/AD_of_SU_3_N_f_2_SU_3_f_maximal_symmetric_finite.svg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 200px; width: 200px;"/>
+        <img src="./figures/loom_scipy_2016/AD_of_SU_3_N_f_2_SU_3_f_maximal_symmetric_finite.svg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 200px; width: 200px;"/>
         <br/>
         <p id="caption">particles</p>
     </div>
     <div style="text-align: center; float: left;">
-        <img src="figures/AD_of_SU_3_N_f_2_SU_3_f_maximal_symmetric_Z_Plot.svg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 200px; width: 200px;"/>
+        <img src="./figures/loom_scipy_2016/AD_of_SU_3_N_f_2_SU_3_f_maximal_symmetric_Z_Plot.svg" style="background:none; box-shadow:none; border:none; vertical-align:middle; height: 200px; width: 200px;"/>
         <br/>
         <p id="caption">central charges</p>
     </div>
     <!-- <div style="text-align: center; height: 200px; float: left;">
-        <img src="figures/figure_A3_k_2_weight.png" style="background:none; box-shadow:none; border:none; vertical-align:middle; margin-bottom: 22px;"/>
+        <img src="./figures/loom_scipy_2016/figure_A3_k_2_weight.png" style="background:none; box-shadow:none; border:none; vertical-align:middle; margin-bottom: 22px;"/>
         <br/>
         <p id="caption">2d solitons
     </div> -->
@@ -287,32 +293,32 @@ M = |Z|,\ Z = \oint_\gamma \lambda.
 <div class="section" id="examples-of-spectral-networks-from-loom">
 <h3>Examples of spectral networks from <tt class="docutils literal">loom</tt></h3>
 <p>In practice, we generate a familiy of colorful networks called spectral networks, stare it until we spot a particle, do some taxonomy of them until we claim a victory.</p>
-<div style="display: block; margin: auto; width: 650px;">
-    <iframe src="http://chan.physics.rutgers.edu/reveal.js/figures/loom_plots/AD_from_pure_SU_3.html" style="width: 600px; height: 700px; background:none; box-shadow:none; border:none;"></iframe>
+<div w3-include-html="loom_plots/AD_from_pure_SU_3.html"></div><div style="display: block; margin: auto; width: 650px;">
+    <iframe src="loom_plots/AD_from_pure_SU_3.html" style="width: 600px; height: 700px; background:none; box-shadow:none; border:none;"></iframe>
 </div></div>
 </div>
 <div class="section" id="from-a-physics-problem-to-a-computational-task">
 <h2>From a physics problem to a computational task</h2>
 <p>OK, enough of physics, now let me describe in detail what exactly the computational problem we want to solve. Every step that I describe here needs to be done using computer and is done by using various Python libraries.</p>
 <p>First a technical detail is we first wrap the Riemann surface on another Riemann surface, in this case a complex plane that has the same topology as a sphere with punctures. Then there are branch points and cuts on the <span class="math">\(z\)</span>-plane, which can be found by solving the equation for the Riemann surface <span class="math">\(f(x, z) = 0\)</span>.</p>
-<object class="align-center" data="figures/SN_step_1.svg" style="width: 400px;" type="image/svg+xml">
+<object class="align-center" data="./figures/loom_scipy_2016/SN_step_1.svg" style="width: 400px;" type="image/svg+xml">
 SN step 1</object>
 <p>Then from a branch point we draw a curve called an <span class="math">\(\mathcal{S}\)</span>-wall, which is a flow determined by the previous differential equation (<span class="math">\(\ref{eq:class_S_diff_eq}\)</span>). Then we draw another one, and so on.</p>
-<object class="align-center" data="figures/SN_step_2.svg" style="width: 400px;" type="image/svg+xml">
+<object class="align-center" data="./figures/loom_scipy_2016/SN_step_2.svg" style="width: 400px;" type="image/svg+xml">
 SN step 2</object>
 <p>There can be an intersection between two curves, and when they satisfy a certain mathematical condition, and for math aficionados the condition is that the roots of the curves sum up to another root of the Lie algebra associated with the theory, there is another curve coming out of the intersection that flows according to (<span class="math">\(\ref{eq:class_S_diff_eq}\)</span>).</p>
-<object class="align-center" data="figures/SN_step_3.svg" style="width: 400px;" type="image/svg+xml">
+<object class="align-center" data="./figures/loom_scipy_2016/SN_step_3.svg" style="width: 400px;" type="image/svg+xml">
 SN step 3</object>
 <p>And we repeat the procedure of finding intersections among the previous and the newly grown curves up to a desired number of iterations. The set of curves obtained this way is called a spectral network <span class="math">\(\mathcal{W}_\theta\)</span> at a fixed value of <span class="math">\(\theta\)</span>, which is a parameter of the differential equation (<span class="math">\(\ref{eq:class_S_diff_eq}\)</span>).</p>
-<object class="align-center" data="figures/full_SN.svg" style="width: 400px;" type="image/svg+xml">
+<object class="align-center" data="./figures/loom_scipy_2016/full_SN.svg" style="width: 400px;" type="image/svg+xml">
 full SN</object>
 <p>Now we <strong>generate a family of spectral networks</strong> for various values of <span class="math">\(\theta\)</span> between <span class="math">\(0\)</span> and <span class="math">\(\pi\)</span>, and <strong>look for a topological change</strong> of the networks by studying the evolution of the spectral networks as we change <span class="math">\(\theta\)</span>.</p>
 <div style="display: block; margin: auto; width: 650px;">
-    <iframe src="http://chan.physics.rutgers.edu/reveal.js/figures/loom_plots/single_hyper.html" style="width: 600px; height: 700px; background:none; box-shadow:none; border:none;"></iframe>
+    <iframe src="loom_plots/single_hyper.html" style="width: 600px; height: 700px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>For a certain value of <span class="math">\(\theta = \theta_\mathrm{c}\)</span> between plot index 9 and 10, we can see there is something going on, and this moment corresponds to spotting a supersymmetric particle.</p>
 <p>At <span class="math">\(\theta = \theta_\mathrm{c}\)</span>, there is a subnetwork <span class="math">\(\mathcal{W}_\mathrm{c} \subset \mathcal{W}_{\theta_\mathrm{c}}\)</span> of finite length between the two branch points, called a two-way street, and there is a supersymmetric particle corresponding to <span class="math">\(\mathcal{W}_\mathrm{c}\)</span>. In terms of M5- and M2-branes, this configuration looks like the following.</p>
 <div style="display: block; text-align: center; margin: auto; width: 300px;">
-    <img src="figures/hypermultiplet_3d.png" style="background:none; border: none; box-shadow:none;"/>
+    <img src="./figures/loom_scipy_2016/hypermultiplet_3d.png" style="background:none; border: none; box-shadow:none;"/>
     <br/>
     <p id="caption">M5- and M2-branes at \(\theta_\mathrm{c}\)</p>
 </div></div>
@@ -370,16 +376,16 @@ At first I used a neat trick of using interpolation which was done entirely usin
 <p>Then let me proceed to the frontend of loom. The most important part of it is of course the visualization of generate data, and both Bokeh and matplotlib were used.</p>
 <p>Bokeh is used to deliver a plot as a self-contained dynamic HTML plot, which produces colorful plots with interactability as we can see here with zooming and tooltip and so on, and it works well with reasonable size of data.</p>
 <div style="display: block; margin: auto; width: 550px; height: 575px;">
-    <iframe src="http://chan.physics.rutgers.edu/reveal.js/figures/loom_plots/plot_example_bokeh.html" style="width: 550px; height: 575px; background:none; box-shadow:none; border:none;"></iframe>
+    <iframe src="loom_plots/plot_example_bokeh.html" style="width: 550px; height: 575px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>matplotlib is useful when debugging thanks to its full customizability and also when producing a vector graphics for research papers.</p>
-<object class="align-center" data="figures/plot_example_matplotlib.svg" style="width: 450px;" type="image/svg+xml">
+<object class="align-center" data="./figures/loom_scipy_2016/plot_example_matplotlib.svg" style="width: 450px;" type="image/svg+xml">
 matplotlib plot example</object>
 </div>
 <div class="section" id="gui">
 <h4>GUI</h4>
 <p>When running loom on a local machine, it is convenient to have a GUI, which was implemented using <tt class="docutils literal">Tkinter</tt>.</p>
 <p>Labeling the information of each object in a plot is done using <a class="reference external" href="https://github.com/joferkington/mpldatacursor">mpldatacursor</a>.</p>
-<img alt="loom desktop" class="align-center" src="figures/loom_desktop.png" style="width: 800px;" />
+<img alt="loom desktop" class="align-center" src="./figures/loom_scipy_2016/loom_desktop.png" style="width: 800px;" />
 </div>
 <div class="section" id="web-application-ui">
 <h4>Web application UI</h4>
