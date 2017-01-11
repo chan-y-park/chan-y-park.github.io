@@ -13,7 +13,7 @@
 <link rel="canonical" href="./scipy_2016_talk.html">
 
         <meta name="author" content="Chan Y. Park" />
-        <meta name="keywords" content="python,scipy 2016,string theory,experience" />
+        <meta name="keywords" content="python,scipy 2016,string theory,experiences" />
         <meta name="description" content="MathJax.Hub.Config({ TeX: { Macros: { cH: &#34;{\\mathcal{H}}&#34;, cP: &#34;{\\mathcal{P}}&#34;, cS: &#34;{\\mathcal{S}}&#34;, cK: &#34;{\\mathcal{K}}&#34;, cM: &#34;{\\mathcal{M}}&#34;, cN: &#34;{\\mathcal{N}}&#34;, cW: &#34;{\\mathcal{W}}&#34;, cX: &#34;{\\mathcal{X}}&#34;, SU: &#34;{\\mathrm{SU}}&#34;, SO: &#34;{\\mathrm{SO}}&#34;, Sp: &#34;{\\mathrm{Sp}}&#34;, UU: &#34;{\\mathrm{U}}&#34;, fg: &#34;{\\mathfrak{g}}&#34;, ft: &#34;{\\mathfrak{t}}&#34;, gA: &#34;{\\mathrm{A …" />
 
         <meta property="og:site_name" content="Chan's Blog" />
@@ -26,7 +26,7 @@
             <meta property="article:tag" content="python" />
             <meta property="article:tag" content="scipy 2016" />
             <meta property="article:tag" content="string theory" />
-            <meta property="article:tag" content="experience" />
+            <meta property="article:tag" content="experiences" />
             <meta property="article:author" content="Chan Y. Park" />
 
 
@@ -105,7 +105,7 @@ Chan's Blog            </a>
         /
 	<a href="./tag/string-theory.html">string theory</a>
         /
-	<a href="./tag/experience.html">experience</a>
+	<a href="./tag/experiences.html">experiences</a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
@@ -140,17 +140,17 @@ Chan's Blog            </a>
             equationNumbers: { autoNumber: "AMS" }
         }
     });
-</script><div class="section" id="introduction">
+</script><p>This is an expanded version of my talk &#64; SciPy 2016, adapted from the slides of the talk and scripts edited suitable for a blog post.</p>
+<div class="section" id="introduction">
 <h2>Introduction</h2>
-<p>This is an expanded version of my talk &#64; SciPy 2016.</p>
 <p>I am a postdoc studying string theory at Rutgers University. Here I want to share with you my experience of using Python in my research project. As a teaser, let me show you the end-product of the project, loom, whose web UI can be found at <a class="reference external" href="http://chan.physics.rutgers.edu/loom">http://chan.physics.rutgers.edu/loom</a>.</p>
 <a class="reference external image-reference" href="http://chan.physics.rutgers.edu/loom/"><img alt="loom front page #1" class="align-left" src="./figures/loom_scipy_2016/loom_front_page_1.png" /></a>
 <a class="reference external image-reference" href="http://chan.physics.rutgers.edu/loom/"><img alt="loom front page #2" class="align-left" src="./figures/loom_scipy_2016/loom_front_page_2.png" /></a>
-<p>Here you can see many colorful plots produced for real research, and you can generate your own plot by first going to the configuration page, inputting a few parameters, and then click ‘generate.’ Now you see loom working hard, and like a food network show, let me show you a prepared plot instead of waiting for a while, and here is one nice colorful plot.</p>
+<p>Here you can see many colorful plots produced for real research, and you can generate your own plot by first going to the configuration page, inputting a few parameters, and then clickcking ‘generate’ button. If you proceed with the default configuration, you can get the following nice colorful plot.</p>
 <a class="reference external image-reference" href="http://chan.physics.rutgers.edu/loom/plot?data=AD_from_pure_SU_3"><img alt="loom plot page" class="align-left" src="./figures/loom_scipy_2016/loom_plot_page.png" /></a>
 <div class="section" id="goal">
 <h3>Goal</h3>
-<p>My goal is to illustrate how Python is integrated throughout the progress of this project</p>
+<p>In this post I will try to illustrate how Python is integrated throughout the progress of this project</p>
 <ul class="simple">
 <li>to Python programmers and developers who want to know how a math-oriented theoretical physicist use Python, and</li>
 <li>to scientists who are interested in using Python but have difficulty in figuring out where and how to start</li>
@@ -203,37 +203,36 @@ M \geq \left| Z \right|,
 <object class="align-center" data="./figures/loom_scipy_2016/2_plus_4_M5.svg" type="image/svg+xml">
 2 plus 4 M5</object>
 <p>What we are going to do with those M-branes is we wrap them on a two-dimensional surface, more precisely a Riemann surface with punctures.</p>
-<p>When we wrap <span class="math">\(N\)</span> M5-branes on a punctured Riemann surface <span class="math">\(C\)</span>, we obtain a 4d superysymmetric gauge theory, more precisely <span class="math">\(\mathcal{N}=2\)</span> <span class="math">\(\mathrm{SU}(N)\)</span> theory of class <span class="math">\(S\)</span>. <a class="footnote-reference" href="#gaiotto-2009" id="id1">[1]</a> <a class="footnote-reference" href="#gaiotto-moore-neitzke-2009" id="id2">[2]</a></p>
+<p>When we wrap <span class="math">\(N\)</span> M5-branes on a punctured Riemann surface <span class="math">\(C\)</span>, we obtain a 4d superysymmetric gauge theory, more precisely <span class="math">\(\mathcal{N}=2\)</span> <span class="math">\(\mathrm{SU}(N)\)</span> theory of class <span class="math">\(S\)</span> <a class="footnote-reference" href="#gaiotto-2009" id="id1">[1]</a> <a class="footnote-reference" href="#gaiotto-moore-neitzke-2009" id="id2">[2]</a>.</p>
 <p>In the Coulomb branch of a class <span class="math">\(S\)</span> theory, the M5-branes merge into a single M5-brane wrapping a surface <span class="math">\(\Sigma\)</span>,</p>
 \begin{align}
     f(z, x)=0,\ z \in C, \label{eq:SW_curve}
 \end{align}<p>which is a multi-sheeted cover <span class="math">\(\{ x_{i = 1, \ldots, N} \}\)</span> over <span class="math">\(C\)</span>.</p>
 <p>When we wrap an M5-brane on such a surface, more precisely a complex 1-dimensional curve, which is called a Seiberg-Witten curve, the remaining four-dimensional spacetime that comes from a high-level math of six minus two equals 4, becomes populated with a supersymmetric gauge theory, which you can imagine as a mathematical model of the real world particle physics.</p>
-<p><span class="math">\(\Sigma\)</span> determines the low-energy physics of the theory. <a class="citation-reference" href="#seiberg-witten-1994" id="id3">[Seiberg-Witten_1994]</a></p>
-<p>A nice thing is that the geometry of the Riemann surface determines the four-dimensional physics. This is one example of the interplay between physics and geometry in string theory.</p>
+<p>A nice thing is that the geometry of the Riemann surface <span class="math">\(\Sigma\)</span> determines the low-energy theory of the four-dimensional physics <a class="footnote-reference" href="#seiberg-witten-1994" id="id3">[3]</a>. This is one example of the interplay between physics and geometry in string theory.</p>
 </div>
 <div class="section" id="supersymmetric-particles-from-m2-branes">
 <h3>Supersymmetric particles from M2-branes</h3>
 <object class="align-center" data="./figures/loom_scipy_2016/2_plus_4_M2_M5.svg" type="image/svg+xml">
 2 plus 4 M2 M5</object>
 <p>So we got a theory, but what about particles living in the theory?</p>
-<p>A supersymmetric particle comes from an M2-brane whose boundary ends along a closed curve <span class="math">\(\gamma \in H_1(\Sigma; \mathbb{Z})\)</span> on the two-dimensional Riemann surface <span class="math">\(Sigma\)</span>. <a class="citation-reference" href="#henningson-yi-1997" id="id4">[Henningson-Yi_1997]</a> <a class="citation-reference" href="#mikhailov-1997" id="id5">[Mikhailov_1997]</a></p>
+<p>A supersymmetric particle comes from an M2-brane whose boundary ends along a closed curve <span class="math">\(\gamma \in H_1(\Sigma; \mathbb{Z})\)</span> on the two-dimensional Riemann surface <span class="math">\(\Sigma\)</span>.</p>
 <p>Then the mass of the particle is given by integrating a differential 1-form <span class="math">\(\lambda = x\, \mathrm{d} z\)</span>, called Seiberg-Witten differential, along <span class="math">\(\gamma\)</span>,</p>
 <div class="math">
 \begin{equation*}
 M = |Z|,\ Z = \oint_\gamma \lambda.
 \end{equation*}
 </div>
-<p>and its charges are determined again from the geometry.</p>
+<p>and its charges are determined again from the geometry <a class="footnote-reference" href="#henningson-yi-1997" id="id4">[4]</a> <a class="footnote-reference" href="#mikhailov-1997" id="id5">[5]</a>.</p>
 </div>
 <div class="section" id="spectral-network">
 <h3>Spectral network</h3>
 <p>Thanks to supersymmetry, the boundary of such an M2-brane satisfies a differential equation,</p>
 \begin{align}
     \frac{\partial}{\partial t} \left( \lambda_{j} - \lambda_{k} \right)= \left( x_j(z) - x_k(z) \right) \frac{\partial z}{\partial t} = e^{i \theta},\label{eq:class_S_diff_eq}
-\end{align}<p>where <span class="math">\(t\)</span> is a real parameter along <span class="math">\(\gamma\)</span>, <span class="math">\(\lambda_i = x_i\, \mathrm{d}z\)</span> is the value of <span class="math">\(\lambda\)</span> on the <span class="math">\(i\)</span>-th sheet, and <span class="math">\(\theta= \arg(Z)\)</span>. <a class="citation-reference" href="#klemm-lerche-mayr-vafa-warner-1996" id="id6">[Klemm-Lerche-Mayr-Vafa-Warner_1996]</a></p>
+\end{align}<p>where <span class="math">\(t\)</span> is a real parameter along <span class="math">\(\gamma\)</span>, <span class="math">\(\lambda_i = x_i\, \mathrm{d}z\)</span> is the value of <span class="math">\(\lambda\)</span> on the <span class="math">\(i\)</span>-th sheet, and <span class="math">\(\theta= \arg(Z)\)</span>. <a class="footnote-reference" href="#klemm-lerche-mayr-vafa-warner-1996" id="id6">[6]</a></p>
 <p>Then we can reverse the question, such that we first find the solutions of the differential equation on the Riemann surface and then find particles out of the geometric flows. This is the idea of <strong>spectral network</strong>.</p>
-<p>Extending the previous construction, we consider a set of curves on <span class="math">\(C\)</span> that are the solutions of (<span class="math">\(\ref{eq:class_S_diff_eq}\)</span>) for a fixed <span class="math">\(\theta\)</span>, which is called a spectral network of the class <span class="math">\(\mathcal{S}\)</span> theory determined by <span class="math">\(f(z, x)\)</span>. <a class="citation-reference" href="#gaiotto-moore-neitzke-2012" id="id7">[Gaiotto-Moore-Neitzke_2012]</a></p>
+<p>Extending the previous construction, we consider a set of curves on <span class="math">\(C\)</span> that are the solutions of (<span class="math">\(\ref{eq:class_S_diff_eq}\)</span>) for a fixed <span class="math">\(\theta\)</span>, which is called a spectral network of the class <span class="math">\(\mathcal{S}\)</span> theory determined by <span class="math">\(f(z, x)\)</span>. <a class="footnote-reference" href="#gaiotto-moore-neitzke-2012" id="id7">[7]</a></p>
 </div>
 <div class="section" id="spectroscopy-we-learned-at-high-school">
 <h3>Spectroscopy we learned at high school</h3>
@@ -292,7 +291,7 @@ M = |Z|,\ Z = \oint_\gamma \lambda.
 </div>
 <div class="section" id="examples-of-spectral-networks-from-loom">
 <h3>Examples of spectral networks from <tt class="docutils literal">loom</tt></h3>
-<p>In practice, we generate a familiy of colorful networks called spectral networks, stare it until we spot a particle, do some taxonomy of them until we claim a victory.</p>
+<p>In practice, we generate a familiy of colorful networks called spectral networks, stare it until we spot a particle, do some taxonomy of them until we claim a victory. For example, in the following figure, we have a family of spectral networks, and between #24 and #25 we find one particle, and another around #74. By calculating their masses and charges, we can conjecture what the underlying theory is.</p>
 <div style="display: block; margin: auto; width: 650px;">
     <iframe src="figures/loom_plots/AD_from_pure_SU_3.html" style="width: 600px; height: 700px; background:none; box-shadow:none; border:none;"></iframe>
 </div></div>
@@ -300,23 +299,26 @@ M = |Z|,\ Z = \oint_\gamma \lambda.
 <div class="section" id="from-a-physics-problem-to-a-computational-task">
 <h2>From a physics problem to a computational task</h2>
 <p>OK, enough of physics, now let me describe in detail what exactly the computational problem we want to solve. Every step that I describe here needs to be done using computer and is done by using various Python libraries.</p>
-<p>First a technical detail is we first wrap the Riemann surface on another Riemann surface, in this case a complex plane that has the same topology as a sphere with punctures. Then there are branch points and cuts on the <span class="math">\(z\)</span>-plane, which can be found by solving the equation for the Riemann surface <span class="math">\(f(x, z) = 0\)</span>.</p>
+<p>A mathematical detail is, we first wrap the Riemann surface <span class="math">\(\Sigma\)</span> on another Riemann surface <span class="math">\(C\)</span>, in this case a complex plane that has the same topology as a sphere with punctures, and there are branch points and cuts on the complex <span class="math">\(z\)</span>-plane, which can be found by solving the equation for the Riemann surface <span class="math">\(f(x, z) = 0\)</span>.</p>
 <object class="align-center" data="./figures/loom_scipy_2016/SN_step_1.svg" style="width: 400px;" type="image/svg+xml">
 SN step 1</object>
-<p>Then from a branch point we draw a curve called an <span class="math">\(\mathcal{S}\)</span>-wall, which is a flow determined by the previous differential equation (<span class="math">\(\ref{eq:class_S_diff_eq}\)</span>). Then we draw another one, and so on.</p>
+<p>Then from a branch point we draw a curve called an <span class="math">\(\mathcal{S}\)</span>-wall, which is a flow determined by the previous differential equation (<span class="math">\(\ref{eq:class_S_diff_eq}\)</span>).</p>
 <object class="align-center" data="./figures/loom_scipy_2016/SN_step_2.svg" style="width: 400px;" type="image/svg+xml">
 SN step 2</object>
-<p>There can be an intersection between two curves, and when they satisfy a certain mathematical condition, and for math aficionados the condition is that the roots of the curves sum up to another root of the Lie algebra associated with the theory, there is another curve coming out of the intersection that flows according to (<span class="math">\(\ref{eq:class_S_diff_eq}\)</span>).</p>
+<p>Then we draw another one, and so on.</p>
 <object class="align-center" data="./figures/loom_scipy_2016/SN_step_3.svg" style="width: 400px;" type="image/svg+xml">
 SN step 3</object>
+<p>There can be an intersection between two curves, and when they satisfy a certain mathematical condition, and for math aficionados the condition is that the roots of the curves sum up to another root of the Lie algebra associated with the theory, there is another curve coming out of the intersection that flows according to (<span class="math">\(\ref{eq:class_S_diff_eq}\)</span>).</p>
+<object class="align-center" data="./figures/loom_scipy_2016/SN_step_4.svg" style="width: 400px;" type="image/svg+xml">
+SN step 4</object>
 <p>And we repeat the procedure of finding intersections among the previous and the newly grown curves up to a desired number of iterations. The set of curves obtained this way is called a spectral network <span class="math">\(\mathcal{W}_\theta\)</span> at a fixed value of <span class="math">\(\theta\)</span>, which is a parameter of the differential equation (<span class="math">\(\ref{eq:class_S_diff_eq}\)</span>).</p>
 <object class="align-center" data="./figures/loom_scipy_2016/full_SN.svg" style="width: 400px;" type="image/svg+xml">
 full SN</object>
-<p>Now we <strong>generate a family of spectral networks</strong> for various values of <span class="math">\(\theta\)</span> between <span class="math">\(0\)</span> and <span class="math">\(\pi\)</span>, and <strong>look for a topological change</strong> of the networks by studying the evolution of the spectral networks as we change <span class="math">\(\theta\)</span>.</p>
+<p>Now we <strong>generate a family of spectral networks</strong> for various values of <span class="math">\(\theta\)</span> between <span class="math">\(0\)</span> and <span class="math">\(\pi\)</span>, and <strong>look for a topological change</strong> of the networks by studying the evolution of the spectral networks as we change <span class="math">\(\theta\)</span>. For example, see the following simple spectral networks.</p>
 <div style="display: block; margin: auto; width: 650px;">
     <iframe src="figures/loom_plots/single_hyper.html" style="width: 600px; height: 700px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>For a certain value of <span class="math">\(\theta = \theta_\mathrm{c}\)</span> between plot index 9 and 10, we can see there is something going on, and this moment corresponds to spotting a supersymmetric particle.</p>
-<p>At <span class="math">\(\theta = \theta_\mathrm{c}\)</span>, there is a subnetwork <span class="math">\(\mathcal{W}_\mathrm{c} \subset \mathcal{W}_{\theta_\mathrm{c}}\)</span> of finite length between the two branch points, called a two-way street, and there is a supersymmetric particle corresponding to <span class="math">\(\mathcal{W}_\mathrm{c}\)</span>. In terms of M5- and M2-branes, this configuration looks like the following.</p>
+<p>At <span class="math">\(\theta = \theta_\mathrm{c}\)</span>, there is a subnetwork <span class="math">\(\mathcal{W}_\mathrm{c} \subset \mathcal{W}_{\theta_\mathrm{c}}\)</span> of finite length between the two branch points, called a two-way street, and there is a supersymmetric particle corresponding to <span class="math">\(\mathcal{W}_\mathrm{c}\)</span>. In terms of M5- and M2-branes, this configuration looks like the following, where we have two sheets of M5-branes and an M2-brane ending along the two M5-branes.</p>
 <div style="display: block; text-align: center; margin: auto; width: 300px;">
     <img src="./figures/loom_scipy_2016/hypermultiplet_3d.png" style="background:none; border: none; box-shadow:none;"/>
     <br/>
@@ -328,18 +330,18 @@ full SN</object>
 <h3><tt class="docutils literal">loom</tt>, a Python program to generate spectral networks</h3>
 <p>Now all the groundworks are laid down so let me tell you how loom is actually built.</p>
 <p>Previously there were a few codes for generating spectral networks that are written in Mathematica, which is a favourite mathematics package among string theorists thanks to its user-friendly manipulation of symbolic math.</p>
-<p>However there have been several issues when using Mathematica. A Mathematica code is not particularly convenient during collaborative development of a program and therefore each of us maintained separate codes, which was an overlapping investment of time and effort; there is the issue of the number of licenses available because Mathematica is (quite a pricey) commerical program; in practice the numerical accuracy of Mathematica is not good and its warnings and errors were hard to understand.</p>
-<p>So I launched an open-source project <tt class="docutils literal">loom</tt> on GitHub and started a collaboration with my friend string theorists working on spectral networks, hoping that we can converge our effort into a common project. The name came from ...</p>
+<p>However there have been several issues when using Mathematica. A Mathematica code is not particularly convenient during collaborative development of a program and therefore each of us maintained separate codes, which was an overlapping investment of time and effort; there is the issue of the number of licenses available because Mathematica is (quite a pricey) commerical program; and in practice the numerical accuracy of Mathematica is not good and its warnings and errors are hard to understand.</p>
+<p>So I launched an open-source project <tt class="docutils literal">loom</tt> on GitHub and started a collaboration with my friend string theorists working on spectral networks, hoping that we can converge our effort into a common project. The name came from the fact that drawing a pretty figure of a spectral network is like weaving a tapestry with a loom.</p>
 </div>
 <div class="section" id="why-i-chose-python-to-write-loom">
 <h3>Why I chose Python to write <tt class="docutils literal">loom</tt></h3>
-<p>First of all, my ‘mother tongue’ is C, and at first I was thinking of writing a C module for Mathematica.</p>
+<p>First of all, my <em>mother tongue</em> is C, and at first I was thinking of writing a C module for Mathematica.</p>
 <p>However, after some experiments I decided to use Python.</p>
 <p>It was because Python is easy enough for my colleagues without programming experience to learn, but at the same time is a full-fledged standard programming language.</p>
-<p>All the libraries that I needed and used were open-source, meaning I can look into the box if I want and don’t have to second-guess an incomprehensible error message.</p>
+<p>All the Python libraries that I needed and used were open-source, meaning I can look into the box if I want and don’t have to second-guess an incomprehensible error message.</p>
 <p>Of course an active and helpful Python community was a big factor.</p>
 <p>Diverse and powerful libraries, including SciPy stack, was another crucial factor.</p>
-<p>And when I needed to use something outside Python libraries, including sagemath and C/C++ libraries, it was relatively painless to glue them into a Python program.</p>
+<p>And when I needed to use something outside Python libraries, including <a class="reference external" href="http://www.sagemath.org/">SageMath</a> and C/C++ libraries, it was relatively painless to glue them into a Python program.</p>
 </div>
 <div class="section" id="python-in-the-core-module-of-loom">
 <h3>Python in the core module of <tt class="docutils literal">loom</tt></h3>
@@ -374,37 +376,35 @@ At first I used a neat trick of using interpolation which was done entirely usin
 <div class="section" id="visualization">
 <h4>Visualization</h4>
 <p>Then let me proceed to the frontend of loom. The most important part of it is of course the visualization of generate data, and both Bokeh and matplotlib were used.</p>
-<p>Bokeh is used to deliver a plot as a self-contained dynamic HTML plot, which produces colorful plots with interactability as we can see here with zooming and tooltip and so on, and it works well with reasonable size of data.</p>
+<p><a class="reference external" href="http://bokeh.pydata.org/en/latest/">Bokeh</a> is used to deliver a plot as a self-contained dynamic HTML plot, which produces colorful plots with interactability of zooming and tooltip and so on as we can see here, and it works well with reasonable size of data.</p>
 <div style="display: block; margin: auto; width: 550px; height: 575px;">
     <iframe src="figures/loom_plots/plot_example_bokeh.html" style="width: 550px; height: 575px; background:none; box-shadow:none; border:none;"></iframe>
-</div><p>matplotlib is useful when debugging thanks to its full customizability and also when producing a vector graphics for research papers.</p>
+</div><p><a class="reference external" href="http://matplotlib.org/">matplotlib</a> is useful when debugging thanks to its full customizability and also when producing a vector graphics for research papers, as shown in the following figure.</p>
 <object class="align-center" data="./figures/loom_scipy_2016/plot_example_matplotlib.svg" style="width: 450px;" type="image/svg+xml">
 matplotlib plot example</object>
 </div>
 <div class="section" id="gui">
 <h4>GUI</h4>
-<p>When running loom on a local machine, it is convenient to have a GUI, which was implemented using <tt class="docutils literal">Tkinter</tt>.</p>
-<p>Labeling the information of each object in a plot is done using <a class="reference external" href="https://github.com/joferkington/mpldatacursor">mpldatacursor</a>.</p>
+<p>When running loom on a local machine, it is convenient to have a GUI, which was implemented using <tt class="docutils literal">Tkinter</tt> with labeling the information of each object in a plot being done using <a class="reference external" href="https://github.com/joferkington/mpldatacursor">mpldatacursor</a>. A screenshot of the GUI is shown below.</p>
 <img alt="loom desktop" class="align-center" src="./figures/loom_scipy_2016/loom_desktop.png" style="width: 800px;" />
 </div>
 <div class="section" id="web-application-ui">
 <h4>Web application UI</h4>
 <p>But more emphasis was put on constructing a web frontend and web UI, because many of my theorist friends found it difficult to install Python and/or various Python libraries and I wanted to prepare a system and let my colleagues access it via web.  So a <strong>web frontend</strong> was built using <a class="reference external" href="http://flask.pocoo.org/">Flask</a> as a <strong>WSGI application</strong> running on an Apache web server, and the web application <strong>manages multiple instances of</strong> <tt class="docutils literal">loom</tt> <strong>processes</strong>.</p>
-<p>Then the web UI is implemented using JavaScript and Bokeh’s callback functions, and Server-Sent Events (SSE) were used to send log messages to client web browsers. So here let me show you again the web UI of loom.</p>
+<p>Then the web UI is implemented using JavaScript and Bokeh’s callback functions, and Server-Sent Events (SSE) were used to send log messages to client web browsers. Below is the web UI of loom for setting up a configuration of a spectral network to generate.</p>
 <a class="reference external image-reference" href="http://chan.physics.rutgers.edu/loom/config"><img alt="loom config page" class="align-left" src="./figures/loom_scipy_2016/loom_config_page.png" /></a>
 </div>
 </div>
 </div>
 <div class="section" id="epilogue">
 <h2>Epilogue</h2>
-<p>In the end loom enabled us to finish one project and more are on the way, and loom is actively used by a few researchers. So I would say that Python provides a wonderful suite of libraries useful to theoretical physicists.</p>
-<p>As of now, Mathematica is the most popular tool for computational analysis among string theorists thanks to its user friendliness. But we do wish to have an open-source alternative and I see a great potential in Python, SageMath, and Jupyter.</p>
+<p>In the end loom enabled us to finish a couple of papers <a class="footnote-reference" href="#ade-spectral-networks" id="id8">[8]</a> <a class="footnote-reference" href="#ade-2d" id="id9">[9]</a> and more are on the way, and loom is actively used by a few researchers. So I can say that Python has provided a wonderful suite of libraries useful to theoretical physicists.</p>
+<p>As of now, Mathematica is the most popular tool for computational analysis among string theorists thanks to its user friendliness. But I do wish to have an open-source alternative and I see a great potential in Python, SageMath, and Jupyter.</p>
 <p>Lastly let me thanks my collaborators,</p>
 <ul class="simple">
-<li>Pietro Longhi at Uppsala University, who was a co-author of my paper about spectral network and made an important contribution to <tt class="docutils literal">loom</tt>,</li>
-<li>and Andy Neitzke at UT Austin, who is one of the pioneers in the study of spectral networks and has been giving great feedbacks to <tt class="docutils literal">loom</tt>,</li>
+<li>Pietro Longhi at Uppsala University, who was a co-author of my papers about spectral network and made an important contribution to <tt class="docutils literal">loom</tt>,</li>
+<li>and Andy Neitzke at UT Austin, who is one of the pioneers in the study of spectral networks and has been giving great feedbacks to <tt class="docutils literal">loom</tt>, whose contributions have been crucial for this project.</li>
 </ul>
-<p>whose contributions have been crucial for this project.</p>
 </div>
 <div class="section" id="more-information">
 <h2>More information</h2>
@@ -417,43 +417,55 @@ matplotlib plot example</object>
 <table class="docutils footnote" frame="void" id="gaiotto-2009" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>N=2 dualities, arXiv:0904.2715</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>D.Gaiotto, <em>N=2 dualities</em>, <a class="reference external" href="https://arxiv.org/abs/0904.2715">arXiv:0904.2715</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="gaiotto-moore-neitzke-2009" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Wall-crossing, Hitchin Systems, and the WKB Approximation, arXiv:0907.3987</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>D.Gaiotto, G.Moore, N.Neitzke, <em>Wall-crossing, Hitchin Systems, and the WKB Approximation</em>, <a class="reference external" href="https://arxiv.org/abs/0907.3987">arXiv:0907.3987</a></td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="seiberg-witten-1994" rules="none">
+<table class="docutils footnote" frame="void" id="seiberg-witten-1994" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[Seiberg-Witten_1994]</a></td><td>Monopole Condensation, And Confinement In N=2 Supersymmetric Yang-Mills Theory,    arXiv:hep-th/9407087</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td>N.Seiberg, E.Witten, <em>Monopole Condensation, And Confinement In N=2 Supersymmetric Yang-Mills Theory</em>, <a class="reference external" href="https://arxiv.org/abs/hep-th/9407087">arXiv:hep-th/9407087</a></td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="henningson-yi-1997" rules="none">
+<table class="docutils footnote" frame="void" id="henningson-yi-1997" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[Henningson-Yi_1997]</a></td><td></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id4">[4]</a></td><td>M.Henningson, P.Yi, <em>Four-dimensional BPS-spectra via M-theory</em>, <a class="reference external" href="https://arxiv.org/abs/hep-th/9707251">arxiv:hep-th/9707251</a>.</td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="mikhailov-1997" rules="none">
+<table class="docutils footnote" frame="void" id="mikhailov-1997" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5">[Mikhailov_1997]</a></td><td></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id5">[5]</a></td><td>A.Mikhailov, <em>BPS-states and minimal surfaces</em>, <a class="reference external" href="http://arxiv.org/abs/hep-th/9708068">arxiv:hep-th/9708068</a>.</td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="klemm-lerche-mayr-vafa-warner-1996" rules="none">
+<table class="docutils footnote" frame="void" id="klemm-lerche-mayr-vafa-warner-1996" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[Klemm-Lerche-Mayr-Vafa-Warner_1996]</a></td><td></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id6">[6]</a></td><td>A.Klemm, W.Lerche, P.Mayr, C.Vafa and N.Warner, <em>Self-dual strings and N = 2 supersymmetric field theory</em>, <a class="reference external" href="http://arxiv.org/abs/hep-th/9604034">arxiv:hep-th/9604034</a>.</td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="gaiotto-moore-neitzke-2012" rules="none">
+<table class="docutils footnote" frame="void" id="gaiotto-moore-neitzke-2012" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id7">[Gaiotto-Moore-Neitzke_2012]</a></td><td></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id7">[7]</a></td><td>D.Gaiotto, G.Moore, N.Neitzke, <em>Spectral Networks</em>, <a class="reference external" href="https://arxiv.org/abs/1204.4824">arxiv:1204.4824</a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="ade-spectral-networks" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[8]</a></td><td>P.Longhi, C.Y.Park, <em>ADE Spectral Networks</em>, <a class="reference external" href="http://arxiv.org/abs/arXiv:1601.02633">arXiv:1601.02633</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="ade-2d" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[9]</a></td><td>P.Longhi, C.Y.Park, <em>ADE Spectral Networks and Decoupling Limits of Surface Defects</em>, <a class="reference external" href="http://arxiv.org/abs/arXiv:1601.02633">arXiv:1611.09409</a></td></tr>
 </tbody>
 </table>
 </div>
