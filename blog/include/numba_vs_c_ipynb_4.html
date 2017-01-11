@@ -1,0 +1,30 @@
+<link rel="stylesheet" type="text/css" href="jupyter-ipython.css">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre style="color: #333333;"><span></span><span class="o" style="color: blue;">%%</span>timeit
+s_walls = []
+<span class="k">for</span> init_cond <span class="k">in</span> initial_conditions:
+    s_wall = loom.s_wall.SWall(<span class="o" style="color: blue;">**</span>init_cond)
+    s_wall.grow(method=loom.constants.LIB_C, <span class="o" style="color: blue;">**</span>kwargs)
+    s_walls.append(s_wall)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>10 loops, best of 3: 68.8 ms per loop
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div> 

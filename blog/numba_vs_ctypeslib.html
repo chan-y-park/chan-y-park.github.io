@@ -14,13 +14,13 @@
 
         <meta name="author" content="Chan Y. Park" />
         <meta name="keywords" content="Python,Numba,NumPy,numpy.ctypeslib,SciPy,optimization" />
-        <meta name="description" content="MathJax.Hub.Config({ TeX: { Macros: { cH: &#34;{\\mathcal{H}}&#34;, cP: &#34;{\\mathcal{P}}&#34;, cS: &#34;{\\mathcal{S}}&#34;, cK: &#34;{\\mathcal{K}}&#34;, cM: &#34;{\\mathcal{M}}&#34;, cN: &#34;{\\mathcal{N}}&#34;, cW: &#34;{\\mathcal{W}}&#34;, cX: &#34;{\\mathcal{X}}&#34;, SU: &#34;{\\mathrm{SU}}&#34;, SO: &#34;{\\mathrm{SO}}&#34;, Sp: &#34;{\\mathrm{Sp}}&#34;, UU: &#34;{\\mathrm{U}}&#34;, fg: &#34;{\\mathfrak{g}}&#34;, ft: &#34;{\\mathfrak{t}}&#34;, gA: &#34;{\\mathrm{A …" />
+        <meta name="description" content="MathJax.Hub.Config({ TeX: { Macros: { cH: &#34;{\\mathcal{H}}&#34;, cP: &#34;{\\mathcal{P}}&#34;, cS: &#34;{\\mathcal{S}}&#34;, cK: &#34;{\\mathcal{K}}&#34;, cM: &#34;{\\mathcal{M}}&#34;, cN: &#34;{\\mathcal{N}}&#34;, cW: &#34;{\\mathcal{W}}&#34;, cX: &#34;{\\mathcal{X}}&#34;, SU: &#34;{\\mathrm{SU}}&#34;, SO: &#34;{\\mathrm{SO}}&#34;, Sp: &#34;{\\mathrm{Sp}}&#34;, UU: &#34;{\\mathrm{U}}&#34;, fg: &#34;{\\mathfrak{g}}&#34;, ft: &#34;{\\mathfrak{t}}&#34;, gA: &#34;{\\mathrm{A}}&#34;, gD: &#34;{\\mathrm{D}}&#34;, gE: &#34;{\\mathrm{E}}&#34;, dd: &#34;{\\mathrm{d}}&#34;, ee: &#34;{\\mathrm{e}}&#34;, ii: &#34;{\\mathrm{i}}&#34;, bR: &#34;{\\mathbb{R}}&#34;, bS: &#34;{\\mathbb{S}}&#34;, bZ: &#34;{\\mathbb{Z}}&#34;, }, equationNumbers: { autoNumber: &#34;AMS&#34; } } }); Introduction Here I will discuss usages of Numba and NumPy&#39;s ctypes interface and compare them with each other and also with a pure …" />
 
         <meta property="og:site_name" content="Chan's Blog" />
         <meta property="og:type" content="article"/>
         <meta property="og:title" content="Comparison between Numba and numpy.ctypeslib"/>
         <meta property="og:url" content="./numba_vs_ctypeslib.html"/>
-        <meta property="og:description" content="MathJax.Hub.Config({ TeX: { Macros: { cH: &#34;{\\mathcal{H}}&#34;, cP: &#34;{\\mathcal{P}}&#34;, cS: &#34;{\\mathcal{S}}&#34;, cK: &#34;{\\mathcal{K}}&#34;, cM: &#34;{\\mathcal{M}}&#34;, cN: &#34;{\\mathcal{N}}&#34;, cW: &#34;{\\mathcal{W}}&#34;, cX: &#34;{\\mathcal{X}}&#34;, SU: &#34;{\\mathrm{SU}}&#34;, SO: &#34;{\\mathrm{SO}}&#34;, Sp: &#34;{\\mathrm{Sp}}&#34;, UU: &#34;{\\mathrm{U}}&#34;, fg: &#34;{\\mathfrak{g}}&#34;, ft: &#34;{\\mathfrak{t}}&#34;, gA: &#34;{\\mathrm{A …"/>
+        <meta property="og:description" content="MathJax.Hub.Config({ TeX: { Macros: { cH: &#34;{\\mathcal{H}}&#34;, cP: &#34;{\\mathcal{P}}&#34;, cS: &#34;{\\mathcal{S}}&#34;, cK: &#34;{\\mathcal{K}}&#34;, cM: &#34;{\\mathcal{M}}&#34;, cN: &#34;{\\mathcal{N}}&#34;, cW: &#34;{\\mathcal{W}}&#34;, cX: &#34;{\\mathcal{X}}&#34;, SU: &#34;{\\mathrm{SU}}&#34;, SO: &#34;{\\mathrm{SO}}&#34;, Sp: &#34;{\\mathrm{Sp}}&#34;, UU: &#34;{\\mathrm{U}}&#34;, fg: &#34;{\\mathfrak{g}}&#34;, ft: &#34;{\\mathfrak{t}}&#34;, gA: &#34;{\\mathrm{A}}&#34;, gD: &#34;{\\mathrm{D}}&#34;, gE: &#34;{\\mathrm{E}}&#34;, dd: &#34;{\\mathrm{d}}&#34;, ee: &#34;{\\mathrm{e}}&#34;, ii: &#34;{\\mathrm{i}}&#34;, bR: &#34;{\\mathbb{R}}&#34;, bS: &#34;{\\mathbb{S}}&#34;, bZ: &#34;{\\mathbb{Z}}&#34;, }, equationNumbers: { autoNumber: &#34;AMS&#34; } } }); Introduction Here I will discuss usages of Numba and NumPy&#39;s ctypes interface and compare them with each other and also with a pure …"/>
         <meta property="article:published_time" content="2016-10-26" />
             <meta property="article:section" content="articles" />
             <meta property="article:tag" content="Python" />
@@ -174,65 +174,8 @@ Chan's Blog            </a>
     <span class="n">z</span><span class="p">[</span><span class="n">step</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">ode</span><span class="o">.</span><span class="n">integrate</span><span class="p">(</span><span class="n">ode</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="n">dt</span><span class="p">)</span>
 </pre></div>
 <p>For the entire code, see <tt class="docutils literal">class GrowLibs</tt> and <tt class="docutils literal">grow()</tt> in <a class="reference external" href="http://github.com/chan-y-park/loom/blob/master/loom/s_wall.py">http://github.com/chan-y-park/loom/blob/master/loom/s_wall.py</a>. Now let's run it from a Jupyter/IPython notebook with <tt class="docutils literal">%%timeit</tt> to measure how long it takes to generate a result for the default configuration.</p>
-<link rel="stylesheet" type="text/css" href="./css/jupyter-ipython.css">
-
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre style="color: #333333;"><span></span><span class="o" style="color: blue;">%%</span>timeit
-s_walls = []
-<span class="k">for</span> init_cond <span class="k">in</span> initial_conditions:
-    s_wall = loom.s_wall.SWall(<span class="o" style="color: blue;">**</span>init_cond)
-    s_wall.grow(method=loom.constants.LIB_SCIPY_ODE, <span class="o" style="color: blue;">**</span>kwargs)
-    s_walls.append(s_wall)
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>10 loops, best of 3: 119 ms per loop
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre style="color: #333333;">d.plot_s_walls(s_walls)</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_png output_subarea ">
-<img src="./figures/default_s_walls.png">
-</div>
-</div>
-
-</div>
-</div>
-
+<div style="display: block; margin: auto;">
+    <iframe src="include/numba_vs_c_ipynb_1.html" style="width: 800px; height: 550px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>As see in the profiling results, SciPy's ODE solver is reasonably fast, although it is not as fast as others. Rather, the issue was that, for certain configurations other than the simple one we used here, the numerical accuracy of the solutions obtained via the ODE solver are not good enough in the context of the specific problem we are trying to solve here. Probably there is a way to fine-tune various parameters of the ODE solver, but the core is written in Fortran (see <a class="reference external" href="http://www.netlib.org/ode/zvode.f">http://www.netlib.org/ode/zvode.f</a> for the Fortran source code) therefore I found it hard to read the code and do the right guesswork of tuning the parameters.</p>
 <p>To summarize, SciPy's ODE solver is a general-purpose solver that is easy to use and has good performance, but once you see the program working and want to optimize the solver part it may be better to look for an alternative that can be specialized to your problem, which is what I did in my project.</p>
 </div>
@@ -262,35 +205,8 @@ s_walls = []
     <span class="n">x</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">xs_at_z_n</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">xs</span> <span class="o">-</span> <span class="n">x_i</span><span class="p">)]</span>
 </pre></div>
 <p>For the entire code, see <tt class="docutils literal">SWCurve.get_xs()</tt> in <a class="reference external" href="http://github.com/chan-y-park/loom/blob/master/loom/geometry.py">http://github.com/chan-y-park/loom/blob/master/loom/geometry.py</a> and <tt class="docutils literal">grow()</tt> in <a class="reference external" href="http://github.com/chan-y-park/loom/blob/master/loom/s_wall.py">http://github.com/chan-y-park/loom/blob/master/loom/s_wall.py</a>. Let's run this implementation and compare its performance to that of the ODE solver.</p>
-<link rel="stylesheet" type="text/css" href="./css/jupyter-ipython.css">
-
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre style="color: #333333;"><span></span><span class="o" style="color: blue;">%%</span>timeit
-s_walls = []
-<span class="k">for</span> init_cond <span class="k">in</span> initial_conditions:
-    s_wall = loom.s_wall.SWall(<span class="o" style="color: blue;">**</span>init_cond)
-    s_wall.grow(method=loom.constants.LIB_PYTHON, <span class="o" style="color: blue;">**</span>kwargs)
-    s_walls.append(s_wall)
-</pre>
-</div>
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>10 loops, best of 3: 152 ms per loop
-</pre>
-</div>
-</div>
-</div>
-</div>
+<div style="display: block; margin: auto;">
+    <iframe src="include/numba_vs_c_ipynb_2.html" style="width: 800px; height: 140px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>Thanks to NumPy this is not much slower than using SciPy's ODE solver, 119 ms vs. 152 ms. Of course these run on two different algorithms and therefore this result is not a comparison of performances between SciPy and Python+NumPy, rather it is a comparison of two different ideas, which usually happen in real life.</p>
 <p>One possibility to optimize the above routine is that we don't have to find all the roots of a given complex polynomial, but just the one nearest to the previous solution, and this is the perfect setting for using Newton's method to find a root of the polynomial.</p>
 </div>
@@ -350,35 +266,8 @@ s_walls = []
 <p>There are two remarks that I want to make before we move on to the performace comparison. First of all, as you can see from the above code (and from the documentation of Numba) it is recommended to write a code in a starightforward manner, e.g. using <tt class="docutils literal">for</tt> loops insted of list comprehension, for the Numba compiler to work with less problem.</p>
 <p>Secondly, I was not able to compile the entire routine of solving the differential equation due to Numba compile errors that I could not identify where and how to fix. Just the functions implementing Newton's method were compiled with Numba, although this gives a good performace boost as we will see soon. Because one has to write a Python code like C for the code to be compiled with Numba and because it is often more difficult to figure out a Numba compilation error than a C code error, my suggestion would be just try putting <tt class="docutils literal">&#64;numba.jit</tt> at the code to be optimized without much modification of the code, and if it works it's great, but if it does not compile don't try too hard to make it work but rather move on to a different optimization, especically if the code is long and complicated. Even if so, the effort put on writing up the Python code is not in vain as it serves as a good prototype as well as a baseline to compare the results and the performances!</p>
 <p>Finally let's run the Numba-compiled code and see how faster the whole thing runs.</p>
-<link rel="stylesheet" type="text/css" href="./css/jupyter-ipython.css">
-
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre style="color: #333333;"><span></span><span class="o" style="color: blue;">%%</span>timeit
-s_walls = []
-<span class="k">for</span> init_cond <span class="k">in</span> initial_conditions:
-    s_wall = loom.s_wall.SWall(<span class="o" style="color: blue;">**</span>init_cond)
-    s_wall.grow(method=loom.constants.LIB_NUMBA, <span class="o" style="color: blue;">**</span>kwargs)
-    s_walls.append(s_wall)
-</pre>
-</div>
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>10 loops, best of 3: 81.5 ms per loop
-</pre>
-</div>
-</div>
-</div>
-</div>
+<div style="display: block; margin: auto;">
+    <iframe src="include/numba_vs_c_ipynb_3.html" style="width: 800px; height: 140px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>When comparing to previous results that take more than 100 ms, we see that Numba gives us a good boost in performance. But more interesting question would be: how it fares against C? In the following we will implement the same routine with C, unlike previous examples where the underlying algorithms are rather different from this one. Therefore it will be a real performace comparison between Numba and C.</p>
 </div>
 <div class="section" id="method-2-2-implemeting-newton-s-method-with-c">
@@ -468,35 +357,8 @@ s_walls = []
 <span class="p">}</span>
 </pre></div>
 <p>You can easily see that these functions look much like the Python code compiled by Numba; in that sense writing a Python code for Numba does not give us a great advantage compared to producing a C code because we cannot freely use Python in full capacity. Of course we have to do an extra work to provide a Python wrapper for a C code if we want to use it in a Python program, but it is not a huge work at all if we work with NumPy arrays and NumPy's <tt class="docutils literal">ctypes</tt> interface, which is discussed in <a class="footnote-reference" href="#numpy-ctypes" id="id5">[3]</a>. Now it's time to run this and see how much mileage we get from all the hard work.</p>
-<link rel="stylesheet" type="text/css" href="./css/jupyter-ipython.css">
-
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre style="color: #333333;"><span></span><span class="o" style="color: blue;">%%</span>timeit
-s_walls = []
-<span class="k">for</span> init_cond <span class="k">in</span> initial_conditions:
-    s_wall = loom.s_wall.SWall(<span class="o" style="color: blue;">**</span>init_cond)
-    s_wall.grow(method=loom.constants.LIB_C, <span class="o" style="color: blue;">**</span>kwargs)
-    s_walls.append(s_wall)
-</pre>
-</div>
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>10 loops, best of 3: 68.8 ms per loop
-</pre>
-</div>
-</div>
-</div>
-</div>
+<div style="display: block; margin: auto;">
+    <iframe src="include/numba_vs_c_ipynb_4.html" style="width: 800px; height: 140px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>It's 81.5 ms / 68.8 ms = 118%, which is quite a significant amount. It is not an overwhelming performance advantage to justify changing all the Numba codes to C codes, considering the overhead of preparing a C-Python interface and the burden of debugging both C codes and Python codes at the same time. But if a new routine should be implemented that is supposed to be more than a few lines of Python code and it will be a critical part regarding the performace of the program, this amount of speed difference is big enough to choose C over Numba.</p>
 </div>
 </div>
