@@ -358,7 +358,7 @@ Chan's Blog            </a>
 </pre></div>
 <p>You can easily see that these functions look much like the Python code compiled by Numba; in that sense writing a Python code for Numba does not give us a great advantage compared to producing a C code because we cannot freely use Python in full capacity. Of course we have to do an extra work to provide a Python wrapper for a C code if we want to use it in a Python program, but it is not a huge work at all if we work with NumPy arrays and NumPy's <tt class="docutils literal">ctypes</tt> interface, which is discussed in <a class="footnote-reference" href="#numpy-ctypes" id="id5">[3]</a>. Now it's time to run this and see how much mileage we get from all the hard work.</p>
 <div style="display: block; margin: auto;">
-    <iframe src="include/numba_vs_c_ipynb_4.html" style="width: 800px; height: 140px; background:none; box-shadow:none; border:none;"></iframe>
+    <iframe src="./include/numba_vs_c_ipynb_4.html" style="width: 800px; height: 140px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>It's 81.5 ms / 68.8 ms = 118%, which is quite a significant amount. It is not an overwhelming performance advantage to justify changing all the Numba codes to C codes, considering the overhead of preparing a C-Python interface and the burden of debugging both C codes and Python codes at the same time. But if a new routine should be implemented that is supposed to be more than a few lines of Python code and it will be a critical part regarding the performace of the program, this amount of speed difference is big enough to choose C over Numba.</p>
 </div>
 </div>
