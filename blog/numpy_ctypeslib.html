@@ -35,7 +35,7 @@
         <link rel="stylesheet" href="./theme/css/bootstrap.min.css" type="text/css"/>
     <link href="./theme/css/font-awesome.min.css" rel="stylesheet">
 
-    <link href="./theme/css/pygments/native.css" rel="stylesheet">
+    <link href="./theme/css/pygments/monokai.css" rel="stylesheet">
     <link rel="stylesheet" href="./theme/css/style.css" type="text/css"/>
         <link href="./static/custom.css" rel="stylesheet">
 
@@ -63,6 +63,9 @@ Chan Y. Park            </a>
                          <li><a href="./pages/about.html">
                              About Me
                           </a></li>
+                        <li >
+                            <a href="./category/deep-learning.html">Deep learning</a>
+                        </li>
                         <li >
                             <a href="./category/experiences.html">Experiences</a>
                         </li>
@@ -175,7 +178,7 @@ Chan Y. Park            </a>
 
     <span class="n">libcgal_intersection</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">load_library</span><span class="p">(</span>
         <span class="n">lib_name</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span> <span class="o">+</span>
+        <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span>
          <span class="s1">&#39;/cgal_intersection/&#39;</span><span class="p">),</span>
     <span class="p">)</span>
 
@@ -264,7 +267,7 @@ Chan Y. Park            </a>
     <span class="k">def</span> <span class="nf">out_p_nbhd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv</span> <span class="o">==</span> <span class="n">OUT_P_NBHD</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_same_xs</span><span class="p">():</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;x1 == x2&#39;</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">near_puncture</span><span class="p">():</span>
@@ -284,7 +287,7 @@ Chan Y. Park            </a>
 
 <span class="n">clibs_s_wall</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">load_library</span><span class="p">(</span>
     <span class="s1">&#39;s_wall&#39;</span><span class="p">,</span>
-    <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span> <span class="o">+</span>
+    <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span>
      <span class="s1">&#39;/clibs/&#39;</span><span class="p">),</span>
 <span class="p">)</span>
 

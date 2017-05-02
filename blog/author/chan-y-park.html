@@ -25,7 +25,7 @@
         <link rel="stylesheet" href="../theme/css/bootstrap.min.css" type="text/css"/>
     <link href="../theme/css/font-awesome.min.css" rel="stylesheet">
 
-    <link href="../theme/css/pygments/native.css" rel="stylesheet">
+    <link href="../theme/css/pygments/monokai.css" rel="stylesheet">
     <link rel="stylesheet" href="../theme/css/style.css" type="text/css"/>
         <link href="../static/custom.css" rel="stylesheet">
 
@@ -54,6 +54,9 @@ Chan Y. Park            </a>
                              About Me
                           </a></li>
                         <li >
+                            <a href="../category/deep-learning.html">Deep learning</a>
+                        </li>
+                        <li >
                             <a href="../category/experiences.html">Experiences</a>
                         </li>
                         <li >
@@ -71,6 +74,27 @@ Chan Y. Park            </a>
 <div class="container">
     <div class="row">
         <div class="col-sm-9">
+            <article>
+                <h2><a href="../rl_atari.html">Reinforcement Learning via Atari Games</a></h2>
+                <div class="summary"><script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        TeX: {
+            Macros: {
+                dd: "{\\mathrm{d}}",
+                ee: "{\\mathrm{e}}",
+                ii: "{\\mathrm{i}}",
+                bR: "{\\mathbb{R}}",
+                bS: "{\\mathbb{S}}",
+                bZ: "{\\mathbb{Z}}",
+            },
+            equationNumbers: { autoNumber: "AMS" }
+        }
+    });
+</script><p>This is the first of a series of blog posts that will describe my project of implementing reinforcement learning of Atari games using <a class="reference external" href="https://www.tensorflow.org/">TensorFlow</a> and <a class="reference external" href="https://gym.openai.com/">OpenAI Gym</a> This project is meant to be a way of self-studying recent developments of reinforcement learning, so it will start with a simpler implementation and then evolve into more advanced and diverse one. I am planning to describe the process incrementally so that this series of post will …</p>
+                    <a class="btn btn-default btn-xs" href="../rl_atari.html">more ...</a>
+                </div>
+            </article>
+            <hr/>
             <article>
                 <h2><a href="../atomic_force_microscope.html">Fun with atomic force microscope</a></h2>
                 <div class="summary"><p>The first time I learned of atomic force microscope (AFM) was during my first year of my undergraduate studies. I was looking for a research project, and firstly I contacted a few labs at the physics department. But all I could hear was that no lab would take an undergraduate student by policy. Later I found that it was kind of implicit agreement among professors that none of them would take any undergrad into their labs because they thought it as preoccupying students by skipping a formal procedure of admitting graduate students and hire their students among the pool. I …</p>
@@ -166,15 +190,16 @@ Chan Y. Park            </a>
                 </div>
             </article>
             <hr/>
-            <article>
-                <h2><a href="../numpy_ctypeslib.html">Using Python <tt class="docutils literal">ctypes</tt> and NumPy <tt class="docutils literal">ctypeslib</tt></a></h2>
-                <div class="summary"><p>For various reasons we sometimes need to use C or C++ libraries inside a Python program: it may be because there is a component critical to the performance that can gain speed by using a C code, or it may be because there is already an excellent library written in C++ that we want to use instead of writing it in Python from scratch.</p>
-<p>Here we will discuss both cases using one of my projects, <a class="reference external" href="https://github.com/chan-y-park/loom">loom</a>, as an example. It includes using a C code discussed in <a class="citation-reference" href="#numba-vs-ctypeslib" id="id1">[numba_vs_ctypeslib]</a> inside a Python code, and glueing an external C++ library called CGAL …</p>
-                    <a class="btn btn-default btn-xs" href="../numpy_ctypeslib.html">more ...</a>
-                </div>
-            </article>
-            <hr/>
 
+        <ul class="pagination">
+                <li class="prev disabled"><a href="#">&laquo;</a></li>
+                    <li class="active"><a
+                            href="../author/chan-y-park.html">1</a></li>
+                    <li class=""><a
+                            href="../author/chan-y-park2.html">2</a></li>
+                <li class="next"><a
+                        href="../author/chan-y-park2.html">&raquo;</a></li>
+        </ul>
         </div>
         <div class="col-sm-3" id="sidebar">
             <aside>
