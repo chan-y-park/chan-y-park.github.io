@@ -14,13 +14,13 @@
 
         <meta name="author" content="Chan Y. Park" />
         <meta name="keywords" content="Python,Numba,NumPy,numpy.ctypeslib,SciPy,optimization" />
-        <meta name="description" content="MathJax.Hub.Config({ TeX: { Macros: { cH: &#34;{\\mathcal{H}}&#34;, cP: &#34;{\\mathcal{P}}&#34;, cS: &#34;{\\mathcal{S}}&#34;, cK: &#34;{\\mathcal{K}}&#34;, cM: &#34;{\\mathcal{M}}&#34;, cN: &#34;{\\mathcal{N}}&#34;, cW: &#34;{\\mathcal{W}}&#34;, cX: &#34;{\\mathcal{X}}&#34;, SU: &#34;{\\mathrm{SU}}&#34;, SO: &#34;{\\mathrm{SO}}&#34;, Sp: &#34;{\\mathrm{Sp}}&#34;, UU: &#34;{\\mathrm{U}}&#34;, fg: &#34;{\\mathfrak{g}}&#34;, ft: &#34;{\\mathfrak{t}}&#34;, gA: &#34;{\\mathrm{A}}&#34;, gD: &#34;{\\mathrm{D}}&#34;, gE: &#34;{\\mathrm{E}}&#34;, dd: &#34;{\\mathrm{d}}&#34;, ee: &#34;{\\mathrm{e}}&#34;, ii: &#34;{\\mathrm{i}}&#34;, bR: &#34;{\\mathbb{R}}&#34;, bS: &#34;{\\mathbb{S}}&#34;, bZ: &#34;{\\mathbb{Z}}&#34;, }, equationNumbers: { autoNumber: &#34;AMS&#34; } } }); Introduction Here I will discuss usages of Numba and NumPy&#39;s ctypes interface and compare them with each other and also with a pure …" />
+        <meta name="description" content="Here I will discuss usages of Numba and NumPy&#39;s ctypes interface and compare them with each other and also with a pure Python example." />
 
         <meta property="og:site_name" content="Chan Y. Park" />
         <meta property="og:type" content="article"/>
         <meta property="og:title" content="Comparison between Numba and numpy.ctypeslib"/>
         <meta property="og:url" content="./numba_vs_ctypeslib.html"/>
-        <meta property="og:description" content="MathJax.Hub.Config({ TeX: { Macros: { cH: &#34;{\\mathcal{H}}&#34;, cP: &#34;{\\mathcal{P}}&#34;, cS: &#34;{\\mathcal{S}}&#34;, cK: &#34;{\\mathcal{K}}&#34;, cM: &#34;{\\mathcal{M}}&#34;, cN: &#34;{\\mathcal{N}}&#34;, cW: &#34;{\\mathcal{W}}&#34;, cX: &#34;{\\mathcal{X}}&#34;, SU: &#34;{\\mathrm{SU}}&#34;, SO: &#34;{\\mathrm{SO}}&#34;, Sp: &#34;{\\mathrm{Sp}}&#34;, UU: &#34;{\\mathrm{U}}&#34;, fg: &#34;{\\mathfrak{g}}&#34;, ft: &#34;{\\mathfrak{t}}&#34;, gA: &#34;{\\mathrm{A}}&#34;, gD: &#34;{\\mathrm{D}}&#34;, gE: &#34;{\\mathrm{E}}&#34;, dd: &#34;{\\mathrm{d}}&#34;, ee: &#34;{\\mathrm{e}}&#34;, ii: &#34;{\\mathrm{i}}&#34;, bR: &#34;{\\mathbb{R}}&#34;, bS: &#34;{\\mathbb{S}}&#34;, bZ: &#34;{\\mathbb{Z}}&#34;, }, equationNumbers: { autoNumber: &#34;AMS&#34; } } }); Introduction Here I will discuss usages of Numba and NumPy&#39;s ctypes interface and compare them with each other and also with a pure …"/>
+        <meta property="og:description" content="Here I will discuss usages of Numba and NumPy&#39;s ctypes interface and compare them with each other and also with a pure Python example."/>
         <meta property="article:published_time" content="2016-10-26" />
             <meta property="article:section" content="Python" />
             <meta property="article:tag" content="Python" />
@@ -124,7 +124,11 @@ Chan Y. Park            </a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
-                <script type="text/x-mathjax-config">
+                <div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>Here I will discuss usages of Numba and NumPy's ctypes interface and compare them with each other and also with a pure Python example.</p>
+<p>There are many nice benchmarks of optimizing Python using Numba, NumPy, or other libraries, for example see <a class="footnote-reference" href="#jakevdp" id="id1">[1]</a> where a clean comparison among optimizations using various libraries are provided with profilings. In comparison, here I will put the comparison in the context of a real-world example of a project that I have been working on, the overview of which can be found at <a class="footnote-reference" href="#scipy-2016-talk" id="id2">[2]</a>. Because the routine to optimize is a part of a larger program, this provides a realistic estimate of how much mileage we get by using Numba and NumPy ctypes interface, although it does not give us a clear-cut comparisons like <a class="footnote-reference" href="#jakevdp" id="id3">[1]</a>.</p>
+<script type="text/x-mathjax-config">
     MathJax.Hub.Config({
         TeX: {
             Macros: {
@@ -155,10 +159,7 @@ Chan Y. Park            </a>
             equationNumbers: { autoNumber: "AMS" }
         }
     });
-</script><div class="section" id="introduction">
-<h2>Introduction</h2>
-<p>Here I will discuss usages of Numba and NumPy's ctypes interface and compare them with each other and also with a pure Python example. There are many nice benchmarks of optimizing Python using Numba, NumPy, or other libraries, for example see <a class="footnote-reference" href="#jakevdp" id="id1">[1]</a> where a clean comparison among optimizations using various libraries are provided with profilings. In comparison, here I will put the comparison in the context of a real-world example of a project that I have been working on, the overview of which can be found at <a class="footnote-reference" href="#scipy-2016-talk" id="id2">[2]</a>. Because the routine to optimize is a part of a larger program, this provides a realistic estimate of how much mileage we get by using Numba and NumPy ctypes interface, although it does not give us a clear-cut comparisons like <a class="footnote-reference" href="#jakevdp" id="id3">[1]</a>.</p>
-<div class="section" id="tl-dr-of-this-post">
+</script><div class="section" id="tl-dr-of-this-post">
 <h3>TL;DR of this post</h3>
 <ol class="arabic simple">
 <li>Numba's performance is great when it works, it's near to C.</li>
