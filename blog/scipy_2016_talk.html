@@ -151,6 +151,50 @@ Chan Y. Park            </a>
     });
 </script><p>This is an expanded version of my talk &#64; SciPy 2016, adapted from the slides of the talk and scripts edited suitable for a blog post. The talk is recorded and posted on YouTube:</p>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/Xy4Y9UoDhSM" frameborder="0" allowfullscreen></iframe><p>And the slides are available at <a class="reference external" href="http://chan.physics.rutgers.edu/reveal.js/scipy2016.html">http://chan.physics.rutgers.edu/reveal.js/scipy2016.html</a>.</p>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id10">Introduction</a><ul>
+<li><a class="reference internal" href="#goal" id="id11">Goal</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crash-course-string-theory" id="id12">Crash course: string theory</a><ul>
+<li><a class="reference internal" href="#what-is-string-theory" id="id13">What is string theory?</a></li>
+<li><a class="reference internal" href="#why-computational-analysis-in-string-theory" id="id14">Why computational analysis in string theory?</a></li>
+<li><a class="reference internal" href="#string-theory-and-m-theory" id="id15">String theory and M-theory</a></li>
+<li><a class="reference internal" href="#m-branes" id="id16">M-branes</a></li>
+<li><a class="reference internal" href="#supersymmetric-gauge-theory-from-m5-branes" id="id17">Supersymmetric gauge theory from M5-branes</a></li>
+<li><a class="reference internal" href="#supersymmetric-particles-from-m2-branes" id="id18">Supersymmetric particles from M2-branes</a></li>
+<li><a class="reference internal" href="#spectral-network" id="id19">Spectral network</a></li>
+<li><a class="reference internal" href="#spectroscopy-we-learned-at-high-school" id="id20">Spectroscopy we learned at high school</a></li>
+<li><a class="reference internal" href="#supersymmetric-spectroscopy-via-spectral-network" id="id21">Supersymmetric spectroscopy via spectral network</a></li>
+<li><a class="reference internal" href="#examples-of-spectral-networks-from-loom" id="id22">Examples of spectral networks from <tt class="docutils literal">loom</tt></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#from-a-physics-problem-to-a-computational-task" id="id23">From a physics problem to a computational task</a></li>
+<li><a class="reference internal" href="#how-i-built-loom-with-python" id="id24">How I built <tt class="docutils literal">𝚕𝚘𝚘𝚖</tt> with Python</a><ul>
+<li><a class="reference internal" href="#loom-a-python-program-to-generate-spectral-networks" id="id25"><tt class="docutils literal">loom</tt>, a Python program to generate spectral networks</a></li>
+<li><a class="reference internal" href="#why-i-chose-python-to-write-loom" id="id26">Why I chose Python to write <tt class="docutils literal">loom</tt></a></li>
+<li><a class="reference internal" href="#python-in-the-core-module-of-loom" id="id27">Python in the core module of <tt class="docutils literal">loom</tt></a><ul>
+<li><a class="reference internal" href="#symbolic-math" id="id28">Symbolic math</a></li>
+<li><a class="reference internal" href="#numerical-analysis" id="id29">Numerical analysis</a></li>
+<li><a class="reference internal" href="#parallelization" id="id30">Parallelization</a></li>
+<li><a class="reference internal" href="#data-storage" id="id31">Data Storage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#python-in-the-front-end-of-loom" id="id32">Python in the front-end of <tt class="docutils literal">loom</tt></a><ul>
+<li><a class="reference internal" href="#visualization" id="id33">Visualization</a></li>
+<li><a class="reference internal" href="#gui" id="id34">GUI</a></li>
+<li><a class="reference internal" href="#web-application-ui" id="id35">Web application UI</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#epilogue" id="id36">Epilogue</a></li>
+<li><a class="reference internal" href="#more-information" id="id37">More information</a></li>
+<li><a class="reference internal" href="#references" id="id38">References</a></li>
+</ul>
+</div>
 <div class="section" id="introduction">
 <h2>Introduction</h2>
 <p>I am a postdoc studying string theory at Rutgers University. Here I want to share with you my experience of using Python in my research project. As a teaser, let me show you the end-product of the project, loom, whose web UI can be found at <a class="reference external" href="http://chan.physics.rutgers.edu/loom">http://chan.physics.rutgers.edu/loom</a>.</p>

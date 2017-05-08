@@ -124,7 +124,27 @@ Chan Y. Park            </a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
-                <div class="section" id="introduction">
+                <div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id7">Introduction</a><ul>
+<li><a class="reference internal" href="#tl-dr-of-this-post" id="id8">TL;DR of this post</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#background" id="id9">Background</a><ul>
+<li><a class="reference internal" href="#method-1-using-scipy-s-ode-solver" id="id10">Method 1: Using SciPy's ODE solver</a></li>
+<li><a class="reference internal" href="#method-2-finding-roots-of-a-complex-polynomial" id="id11">Method 2: Finding roots of a complex polynomial</a><ul>
+<li><a class="reference internal" href="#method-2-1-using-numpy" id="id12">Method 2.1: Using NumPy</a></li>
+<li><a class="reference internal" href="#method-2-2-implemeting-newton-s-method-with-numba" id="id13">Method 2.2: Implemeting Newton's method with Numba</a></li>
+<li><a class="reference internal" href="#method-2-2-implemeting-newton-s-method-with-c" id="id14">Method 2.2: Implemeting Newton's method with C</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references" id="id15">References</a></li>
+</ul>
+</div>
+<div class="section" id="introduction">
 <h2>Introduction</h2>
 <p>Here I will discuss usages of Numba and NumPy's ctypes interface and compare them with each other and also with a pure Python example.</p>
 <p>There are many nice benchmarks of optimizing Python using Numba, NumPy, or other libraries, for example see <a class="footnote-reference" href="#jakevdp" id="id1">[1]</a> where a clean comparison among optimizations using various libraries are provided with profilings. In comparison, here I will put the comparison in the context of a real-world example of a project that I have been working on, the overview of which can be found at <a class="footnote-reference" href="#scipy-2016-talk" id="id2">[2]</a>. Because the routine to optimize is a part of a larger program, this provides a realistic estimate of how much mileage we get by using Numba and NumPy ctypes interface, although it does not give us a clear-cut comparisons like <a class="footnote-reference" href="#jakevdp" id="id3">[1]</a>.</p>

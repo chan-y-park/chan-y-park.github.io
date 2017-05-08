@@ -21,7 +21,7 @@
         <meta property="og:title" content="Visualizing Convolutional Network"/>
         <meta property="og:url" content="./visualizing_convnet.html"/>
         <meta property="og:description" content="In this post I will describe my ongoing project of understanding VGG16 convolutional network using deconvnet."/>
-        <meta property="article:published_time" content="2017-05-07" />
+        <meta property="article:published_time" content="2017-05-08" />
             <meta property="article:section" content="Deep Learning" />
             <meta property="article:tag" content="machine learning" />
             <meta property="article:tag" content="deep learning" />
@@ -99,7 +99,7 @@ Chan Y. Park            </a>
 <footer class="post-info">
     <span class="label label-default">Date</span>
     <span class="published">
-        <i class="fa fa-calendar"></i><time datetime="2017-05-07T22:30:16.806369-04:00"> Sun 07 May 2017</time>
+        <i class="fa fa-calendar"></i><time datetime="2017-05-08T18:21:32.293082-04:00"> Mon 08 May 2017</time>
     </span>
 
 
@@ -115,8 +115,60 @@ Chan Y. Park            </a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
-                <p>In this series of posts I will describe my ongoing project of understanding convolutional network by using various visualization methods described in previous literatures.</p>
-<p>This first post will be about understanding deconvolution network <a class="footnote-reference" href="#zeiler" id="id1">[1]</a> using VGG16 convolutional network architecture of <a class="footnote-reference" href="#simonyan" id="id2">[2]</a>, because both architectures are simple and straightforward yet have key ideas in the development of convolutional networks. In addition, I will describe a web user interface that is built for the convenience of the visualization.</p>
+                <div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#architecture" id="id19">Architecture</a><ul>
+<li><a class="reference internal" href="#unpooling" id="id20">Unpooling</a></li>
+<li><a class="reference internal" href="#relu" id="id21">ReLU</a></li>
+<li><a class="reference internal" href="#transposed-convolution" id="id22">Transposed convolution</a></li>
+<li><a class="reference internal" href="#deconvolution-network-for-vgg16" id="id23">Deconvolution network for VGG16</a></li>
+<li><a class="reference internal" href="#full-deconvolution-in-a-single-pass" id="id24">Full deconvolution in a single pass</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation" id="id25">Implementation</a><ul>
+<li><a class="reference internal" href="#requirementes" id="id26">Requirementes</a></li>
+<li><a class="reference internal" href="#using-pretrained-weights" id="id27">Using pretrained weights</a></li>
+<li><a class="reference internal" href="#unpooling-and-device-placement" id="id28">Unpooling and device placement</a></li>
+<li><a class="reference internal" href="#gpu-memory-usage" id="id29">GPU memory usage</a></li>
+<li><a class="reference internal" href="#time-comparison-full-deconv-vs-loops-cpu-vs-gpu" id="id30">Time comparison: full deconv vs loops, CPU vs GPU</a><ul>
+<li><a class="reference internal" href="#gpu-full-deconv" id="id31">GPU, full deconv</a></li>
+<li><a class="reference internal" href="#gpu-deconv-loop" id="id32">GPU, deconv loop</a></li>
+<li><a class="reference internal" href="#cpu-full-deconv" id="id33">CPU, full deconv</a></li>
+<li><a class="reference internal" href="#cpu-deconv-loop" id="id34">CPU, deconv loop</a></li>
+<li><a class="reference internal" href="#comparison" id="id35">Comparison</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-deconvolutional-network" id="id36">Building deconvolutional network</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#analysis" id="id37">Analysis</a><ul>
+<li><a class="reference internal" href="#using-test-filters-in-transposed-convolution" id="id38">Using test filters in transposed convolution</a></li>
+<li><a class="reference internal" href="#max-pooling-and-unpooling-a-white-image" id="id39">Max pooling and unpooling a white image</a></li>
+<li><a class="reference internal" href="#a-few-deconvolution-results" id="id40">A few deconvolution results</a><ul>
+<li><a class="reference internal" href="#dog" id="id41">Dog</a></li>
+<li><a class="reference internal" href="#jaguar" id="id42">Jaguar</a></li>
+<li><a class="reference internal" href="#orangutan" id="id43">Orangutan</a></li>
+<li><a class="reference internal" href="#shark" id="id44">Shark</a></li>
+<li><a class="reference internal" href="#ambulance" id="id45">Ambulance</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#coming-up" id="id46">Coming up</a></li>
+<li><a class="reference internal" href="#references" id="id47">References</a></li>
+</ul>
+</div>
+<p>In this series of posts I will describe my ongoing project</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/chan-y-park/visnet">https://github.com/chan-y-park/visnet</a></li>
+</ul>
+<p>which is about understanding convolutional network by using various visualization methods described in previous literatures.</p>
+<p>This first post will be about a branch of the project</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/chan-y-park/visnet/tree/vgg16">https://github.com/chan-y-park/visnet/tree/vgg16</a></li>
+</ul>
+<p>to understand the deconvolution network of <a class="footnote-reference" href="#zeiler" id="id1">[1]</a> using VGG16 convolutional network architecture of <a class="footnote-reference" href="#simonyan" id="id2">[2]</a>, because both architectures are simple and straightforward yet have key ideas in the development of convolutional networks. In addition, I will describe a web user interface that is built for the convenience of the visualization.</p>
 <p>This is just a first step for this project. In the future I will include more architectures for visualizing convolutional networks, including fully convonlutional networks <a class="footnote-reference" href="#shelhamer" id="id3">[3]</a> and atrous convonlution <a class="footnote-reference" href="#chen" id="id4">[4]</a>, as well as deeper convolutional networks like Inception and ResNet.</p>
 <p>I will also add more functionality to the web user interface so that it can be as useful as <a class="footnote-reference" href="#deepvis" id="id5">[5]</a> described in <a class="footnote-reference" href="#yosinski" id="id6">[6]</a>. What I want to do differently in comparison with <a class="footnote-reference" href="#deepvis" id="id7">[5]</a> is 1) I will use TensorFlow instead of Caffe, and 2) I will implement a web user interface using <a class="reference external" href="http://flask.pocoo.org/">Flask</a> instead of GUI, both for portability and for the purpose of putting it on a server as a web app so that anyone can try visualizing how a convolutional network works.</p>
 <div class="section" id="architecture">
@@ -230,6 +282,35 @@ I tensorflow/core/common_runtime/simple_placer.cc:841] deconv_network/block1/poo
 ...
 </pre>
 <p>which shows that indeed <tt class="docutils literal">tf.scatter_nd</tt> is placed on CPU whereas <tt class="docutils literal">tf.reshape</tt> is place on GPU.</p>
+</div>
+<div class="section" id="gpu-memory-usage">
+<h3>GPU memory usage</h3>
+<p>In the above we discussed placing certain TensorFlow ops onto CPU to reduce the usage of GPU. Then how can we check how much GPU memory is being used by TensorFlow? A command line utility called <tt class="docutils literal"><span class="pre">nvidia-smi</span></tt> shows how much GPU memory is allocated to TensorFlow, but it does not show how much of the allocated GPU memory is being used.</p>
+<p>There seems to be a couple of options. One is using a custom op</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/yaroslavvb/memory_probe_ops">https://github.com/yaroslavvb/memory_probe_ops</a></li>
+</ul>
+<p>and another option is using TensorFlow v1.1 and use <tt class="docutils literal">tf.contrib.memory_stats</tt>. Here we use the custom op. For me, the <tt class="docutils literal">.so</tt> file on the GitHub did not work, but compiling the source code according to the instruction worked well. Then we place the op onto the GPU in the following way:</p>
+<div class="highlight"><pre><span></span><span class="c1"># ...</span>
+
+<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;/gpu:0&#39;</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_bytes_in_use</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">load_op_library</span><span class="p">(</span>
+        <span class="s1">&#39;./memory_probe_ops.so&#39;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">bytes_in_use</span><span class="p">()</span>
+
+<span class="c1"># ...</span>
+
+<span class="n">rd</span><span class="p">[</span><span class="s1">&#39;bytes_in_use&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bytes_in_use</span><span class="p">)</span>
+</pre></div>
+<p>Note that this measures the GPU memory usage of the TensorFlow Session at the moment the op is evaluated. Then when we run the full deconv with mostly GPU, we get</p>
+<div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rd</span><span class="p">[</span><span class="s1">&#39;bytes_in_use&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="go">224.529541015625</span>
+</pre></div>
+<p>whereas when running mostly on CPU, the result is</p>
+<div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rd</span><span class="p">[</span><span class="s1">&#39;bytes_in_use&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="go">0.001220703125</span>
+</pre></div>
+<p>which indeed shows much less usage of the GPU memory.</p>
 </div>
 <div class="section" id="time-comparison-full-deconv-vs-loops-cpu-vs-gpu">
 <h3>Time comparison: full deconv vs loops, CPU vs GPU</h3>

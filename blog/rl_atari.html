@@ -21,7 +21,7 @@
         <meta property="og:title" content="Reinforcement Learning via Atari Games"/>
         <meta property="og:url" content="./rl_atari.html"/>
         <meta property="og:description" content="This is the first of a series of blog posts that will describe my project of implementing reinforcement learning of Atari games using TensorFlow and OpenAI Gym."/>
-        <meta property="article:published_time" content="2017-05-05" />
+        <meta property="article:published_time" content="2017-05-08" />
             <meta property="article:section" content="Deep Learning" />
             <meta property="article:tag" content="machine learning" />
             <meta property="article:tag" content="deep learning" />
@@ -100,7 +100,7 @@ Chan Y. Park            </a>
 <footer class="post-info">
     <span class="label label-default">Date</span>
     <span class="published">
-        <i class="fa fa-calendar"></i><time datetime="2017-05-05T11:58:39.620554-04:00"> Fri 05 May 2017</time>
+        <i class="fa fa-calendar"></i><time datetime="2017-05-08T18:20:49.025779-04:00"> Mon 08 May 2017</time>
     </span>
 
 
@@ -132,10 +132,45 @@ Chan Y. Park            </a>
             equationNumbers: { autoNumber: "AMS" }
         }
     });
-</script><div class="section" id="introduction">
+</script><div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id32">Introduction</a></li>
+<li><a class="reference internal" href="#requirements" id="id33">Requirements</a></li>
+<li><a class="reference internal" href="#architecture" id="id34">Architecture</a></li>
+<li><a class="reference internal" href="#implementation" id="id35">Implementation</a><ul>
+<li><a class="reference internal" href="#difference-between-ale-and-openai-gym" id="id36">Difference between ALE and OpenAI Gym</a></li>
+<li><a class="reference internal" href="#inside-openai-gym" id="id37">Inside OpenAI Gym</a></li>
+<li><a class="reference internal" href="#parameters-of-tf-train-rmspropoptimizer" id="id38">Parameters of <tt class="docutils literal">tf.train.RMSPropOptimizer</tt></a></li>
+<li><a class="reference internal" href="#preprocessing" id="id39">Preprocessing</a></li>
+<li><a class="reference internal" href="#padding-of-convolution" id="id40">Padding of convolution</a></li>
+<li><a class="reference internal" href="#reward-rescaling" id="id41">Reward rescaling</a></li>
+<li><a class="reference internal" href="#numpy-memoryerror" id="id42">NumPy MemoryError</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#training" id="id43">Training</a><ul>
+<li><a class="reference internal" href="#vs-6-actions" id="id44">4 vs 6 actions</a></li>
+<li><a class="reference internal" href="#deterministic-vs-stochastic-frame-skipping" id="id45">Deterministic vs stochastic frame skipping</a></li>
+<li><a class="reference internal" href="#anomaly" id="id46">Anomaly?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#result" id="id47">Result</a></li>
+<li><a class="reference internal" href="#coming-up" id="id48">Coming up</a></li>
+<li><a class="reference internal" href="#references" id="id49">References</a></li>
+</ul>
+</div>
+<div class="section" id="introduction">
 <h2>Introduction</h2>
-<p>This is the first of a series of blog posts that will describe my project of implementing reinforcement learning of Atari games using <a class="reference external" href="https://www.tensorflow.org/">TensorFlow</a> and <a class="reference external" href="https://gym.openai.com/">OpenAI Gym</a>. This project is meant to be a way of self-studying recent developments of reinforcement learning, so it will start with a simpler implementation and then evolve into more advanced and diverse one. I am planning to describe the process incrementally so that this series of post will serve as a journal book for myself as well as a guide for others who want to try a similar project for themselves.</p>
-<p>In this post I will explain how to reproduce the architecture and the experiment of <a class="footnote-reference" href="#mnih13" id="id1">[1]</a>, where a relatively small neural network was trained via reinforcement learning to successfully play various Atari games using <a class="reference external" href="https://github.com/stella-emu/stella">Stella</a> emulator. There is a second paper <a class="footnote-reference" href="#mnih15" id="id2">[2]</a> by the same group with an enhanced architecture and more detailed description of the choice of the hyperparameters for training, and we will use those hyperparameters when there is no explicit description of such a parameter in <a class="footnote-reference" href="#mnih13" id="id3">[1]</a>. In the following posts of this series I will implement the enhanced archtecture and compare the results.</p>
+<p>This is the first of a series of blog posts that will describe my project</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/chan-y-park/rl-atari">https://github.com/chan-y-park/rl-atari</a></li>
+</ul>
+<p>of implementing reinforcement learning of Atari games using <a class="reference external" href="https://www.tensorflow.org/">TensorFlow</a> and <a class="reference external" href="https://gym.openai.com/">OpenAI Gym</a>. This project is meant to be a way of self-studying recent developments of reinforcement learning, so it will start with a simpler implementation and then evolve into more advanced and diverse one. I am planning to describe the process incrementally so that this series of post will serve as a journal book for myself as well as a guide for others who want to try a similar project for themselves.</p>
+<p>In this post I focus on a branch of the project,</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/chan-y-park/rl-atari/tree/simple_dqn">https://github.com/chan-y-park/rl-atari/tree/simple_dqn</a></li>
+</ul>
+<p>and will explain how to reproduce the architecture and the experiment of <a class="footnote-reference" href="#mnih13" id="id1">[1]</a>, where a relatively small neural network was trained via reinforcement learning to successfully play various Atari games using <a class="reference external" href="https://github.com/stella-emu/stella">Stella</a> emulator. There is a second paper <a class="footnote-reference" href="#mnih15" id="id2">[2]</a> by the same group with an enhanced architecture and more detailed description of the choice of the hyperparameters for training, and we will use those hyperparameters when there is no explicit description of such a parameter in <a class="footnote-reference" href="#mnih13" id="id3">[1]</a>. In the following posts of this series I will implement the enhanced architecture and compare the results.</p>
 <p>There are similar projects of others that use TensorFlow to reproduce the result of <a class="footnote-reference" href="#mnih15" id="id4">[2]</a> that I have frequently referred to.</p>
 <ul class="simple">
 <li><a class="reference external" href="https://github.com/gliese581gg/DQN_tensorflow">https://github.com/gliese581gg/DQN_tensorflow</a></li>
