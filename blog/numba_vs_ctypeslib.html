@@ -36,7 +36,7 @@
         <link rel="stylesheet" href="./theme/css/bootstrap.min.css" type="text/css"/>
     <link href="./theme/css/font-awesome.min.css" rel="stylesheet">
 
-    <link href="./theme/css/pygments/monokai.css" rel="stylesheet">
+    <link href="./theme/css/pygments/default.css" rel="stylesheet">
     <link rel="stylesheet" href="./theme/css/style.css" type="text/css"/>
         <link href="./static/custom.css" rel="stylesheet">
 
@@ -185,7 +185,7 @@ Chan Y. Park            </a>
 </pre></div>
 <p>For the entire code, see <tt class="docutils literal">class GrowLibs</tt> and <tt class="docutils literal">grow()</tt> in <a class="reference external" href="http://github.com/chan-y-park/loom/blob/master/loom/s_wall.py">http://github.com/chan-y-park/loom/blob/master/loom/s_wall.py</a>. Now let's run it from a Jupyter/IPython notebook with <tt class="docutils literal">%%timeit</tt> to measure how long it takes to generate a result for the default configuration.</p>
 <div style="display: block; margin: auto;">
-    <iframe src="include/numba_vs_c_ipynb_1.html" style="width: 800px; height: 550px; background:none; box-shadow:none; border:none;"></iframe>
+    <iframe src="include/numba_vs_c_ipynb_1.html" style="width: 800px; height: 560px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>As see in the profiling results, SciPy's ODE solver is reasonably fast, although it is not as fast as others. Rather, the issue was that, for certain configurations other than the simple one we used here, the numerical accuracy of the solutions obtained via the ODE solver are not good enough in the context of the specific problem we are trying to solve here. Probably there is a way to fine-tune various parameters of the ODE solver, but the core is written in Fortran (see <a class="reference external" href="http://www.netlib.org/ode/zvode.f">http://www.netlib.org/ode/zvode.f</a> for the Fortran source code) therefore I found it hard to read the code and do the right guesswork of tuning the parameters.</p>
 <p>To summarize, SciPy's ODE solver is a general-purpose solver that is easy to use and has good performance, but once you see the program working and want to optimize the solver part it may be better to look for an alternative that can be specialized to your problem, which is what I did in my project.</p>
 </div>
@@ -216,7 +216,7 @@ Chan Y. Park            </a>
 </pre></div>
 <p>For the entire code, see <tt class="docutils literal">SWCurve.get_xs()</tt> in <a class="reference external" href="http://github.com/chan-y-park/loom/blob/master/loom/geometry.py">http://github.com/chan-y-park/loom/blob/master/loom/geometry.py</a> and <tt class="docutils literal">grow()</tt> in <a class="reference external" href="http://github.com/chan-y-park/loom/blob/master/loom/s_wall.py">http://github.com/chan-y-park/loom/blob/master/loom/s_wall.py</a>. Let's run this implementation and compare its performance to that of the ODE solver.</p>
 <div style="display: block; margin: auto;">
-    <iframe src="include/numba_vs_c_ipynb_2.html" style="width: 800px; height: 140px; background:none; box-shadow:none; border:none;"></iframe>
+    <iframe src="include/numba_vs_c_ipynb_2.html" style="width: 800px; height: 150px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>Thanks to NumPy this is not much slower than using SciPy's ODE solver, 119 ms vs. 152 ms. Of course these run on two different algorithms and therefore this result is not a comparison of performances between SciPy and Python+NumPy, rather it is a comparison of two different ideas, which usually happen in real life.</p>
 <p>One possibility to optimize the above routine is that we don't have to find all the roots of a given complex polynomial, but just the one nearest to the previous solution, and this is the perfect setting for using Newton's method to find a root of the polynomial.</p>
 </div>
@@ -277,7 +277,7 @@ Chan Y. Park            </a>
 <p>Secondly, I was not able to compile the entire routine of solving the differential equation due to Numba compile errors that I could not identify where and how to fix. Just the functions implementing Newton's method were compiled with Numba, although this gives a good performace boost as we will see soon. Because one has to write a Python code like C for the code to be compiled with Numba and because it is often more difficult to figure out a Numba compilation error than a C code error, my suggestion would be just try putting <tt class="docutils literal">&#64;numba.jit</tt> at the code to be optimized without much modification of the code, and if it works it's great, but if it does not compile don't try too hard to make it work but rather move on to a different optimization, especically if the code is long and complicated. Even if so, the effort put on writing up the Python code is not in vain as it serves as a good prototype as well as a baseline to compare the results and the performances!</p>
 <p>Finally let's run the Numba-compiled code and see how faster the whole thing runs.</p>
 <div style="display: block; margin: auto;">
-    <iframe src="include/numba_vs_c_ipynb_3.html" style="width: 800px; height: 140px; background:none; box-shadow:none; border:none;"></iframe>
+    <iframe src="include/numba_vs_c_ipynb_3.html" style="width: 800px; height: 150px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>When comparing to previous results that take more than 100 ms, we see that Numba gives us a good boost in performance. But more interesting question would be: how it fares against C? In the following we will implement the same routine with C, unlike previous examples where the underlying algorithms are rather different from this one. Therefore it will be a real performace comparison between Numba and C.</p>
 </div>
 <div class="section" id="method-2-2-implemeting-newton-s-method-with-c">
@@ -368,7 +368,7 @@ Chan Y. Park            </a>
 </pre></div>
 <p>You can easily see that these functions look much like the Python code compiled by Numba; in that sense writing a Python code for Numba does not give us a great advantage compared to producing a C code because we cannot freely use Python in full capacity. Of course we have to do an extra work to provide a Python wrapper for a C code if we want to use it in a Python program, but it is not a huge work at all if we work with NumPy arrays and NumPy's <tt class="docutils literal">ctypes</tt> interface, which is discussed in <a class="footnote-reference" href="#numpy-ctypes" id="id5">[3]</a>. Now it's time to run this and see how much mileage we get from all the hard work.</p>
 <div style="display: block; margin: auto;">
-    <iframe src="./include/numba_vs_c_ipynb_4.html" style="width: 800px; height: 140px; background:none; box-shadow:none; border:none;"></iframe>
+    <iframe src="./include/numba_vs_c_ipynb_4.html" style="width: 800px; height: 150px; background:none; box-shadow:none; border:none;"></iframe>
 </div><p>It's 81.5 ms / 68.8 ms = 118%, which is quite a significant amount. It is not an overwhelming performance advantage to justify changing all the Numba codes to C codes, considering the overhead of preparing a C-Python interface and the burden of debugging both C codes and Python codes at the same time. But if a new routine should be implemented that is supposed to be more than a few lines of Python code and it will be a critical part regarding the performace of the program, this amount of speed difference is big enough to choose C over Numba.</p>
 </div>
 </div>

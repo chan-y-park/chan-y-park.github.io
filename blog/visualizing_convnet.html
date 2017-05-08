@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Visualizing Convolutional Network - Chan Y. Park</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="./favicon.ico" rel="icon">
+
+<link rel="canonical" href="./visualizing_convnet.html">
+
+        <meta name="author" content="Chan Y. Park" />
+        <meta name="keywords" content="machine learning,deep learning,tensorflow" />
+        <meta name="description" content="In this post I will describe my ongoing project of understanding VGG16 convolutional network using deconvnet." />
+
+        <meta property="og:site_name" content="Chan Y. Park" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Visualizing Convolutional Network"/>
+        <meta property="og:url" content="./visualizing_convnet.html"/>
+        <meta property="og:description" content="In this post I will describe my ongoing project of understanding VGG16 convolutional network using deconvnet."/>
+        <meta property="article:published_time" content="2017-05-07" />
+            <meta property="article:section" content="Deep Learning" />
+            <meta property="article:tag" content="machine learning" />
+            <meta property="article:tag" content="deep learning" />
+            <meta property="article:tag" content="tensorflow" />
+            <meta property="article:author" content="Chan Y. Park" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="./theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="./theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="./theme/css/pygments/default.css" rel="stylesheet">
+    <link rel="stylesheet" href="./theme/css/style.css" type="text/css"/>
+        <link href="./static/custom.css" rel="stylesheet">
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="./" class="navbar-brand">
+Chan Y. Park            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                         <li><a href="./pages/about.html">
+                             About Me
+                          </a></li>
+                        <li class="active">
+                            <a href="./category/deep-learning.html">Deep learning</a>
+                        </li>
+                        <li >
+                            <a href="./category/experiences.html">Experiences</a>
+                        </li>
+                        <li >
+                            <a href="./category/python.html">Python</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="./visualizing_convnet.html"
+                       rel="bookmark"
+                       title="Permalink to Visualizing Convolutional Network">
+                        Visualizing Convolutional Network
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2017-05-07T22:30:16.806369-04:00"> Sun 07 May 2017</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="./tag/machine-learning.html">machine learning</a>
+        /
+	<a href="./tag/deep-learning.html">deep learning</a>
+        /
+	<a href="./tag/tensorflow.html">tensorflow</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>In this series of posts I will describe my ongoing project of understanding convolutional network by using various visualization methods described in previous literatures.</p>
+<p>This first post will be about understanding deconvolution network <a class="footnote-reference" href="#zeiler" id="id1">[1]</a> using VGG16 convolutional network architecture of <a class="footnote-reference" href="#simonyan" id="id2">[2]</a>, because both architectures are simple and straightforward yet have key ideas in the development of convolutional networks. In addition, I will describe a web user interface that is built for the convenience of the visualization.</p>
+<p>This is just a first step for this project. In the future I will include more architectures for visualizing convolutional networks, including fully convonlutional networks <a class="footnote-reference" href="#shelhamer" id="id3">[3]</a> and atrous convonlution <a class="footnote-reference" href="#chen" id="id4">[4]</a>, as well as deeper convolutional networks like Inception and ResNet.</p>
+<p>I will also add more functionality to the web user interface so that it can be as useful as <a class="footnote-reference" href="#deepvis" id="id5">[5]</a> described in <a class="footnote-reference" href="#yosinski" id="id6">[6]</a>. What I want to do differently in comparison with <a class="footnote-reference" href="#deepvis" id="id7">[5]</a> is 1) I will use TensorFlow instead of Caffe, and 2) I will implement a web user interface using <a class="reference external" href="http://flask.pocoo.org/">Flask</a> instead of GUI, both for portability and for the purpose of putting it on a server as a web app so that anyone can try visualizing how a convolutional network works.</p>
+<div class="section" id="architecture">
+<h2>Architecture</h2>
+<p>The idea of a deconvolutional network is simple: considering a typical layer of a convolutional network that consists of a 2d convolution followed by a ReLU activation and then a max pooling. A deconvolutional network gets the output of the convolutional network as an input and produces a &quot;reconstruction&quot; of the input of the convolutional network, as shown in the following diagram borrowed from <a class="footnote-reference" href="#zeiler" id="id8">[1]</a>.</p>
+<img alt="deconvent architecture" class="align-left" src="./figures/visualizing_convnet/deconvnet_architecture.png" />
+<div class="section" id="unpooling">
+<h3>Unpooling</h3>
+<p>To do a deconvolution, first we need to &quot;unpool&quot; the max pooling, and for that purpose we need to record the locations of the &quot;switches&quot; of the max pooling, i.e. the &quot;argmax&quot; results of the max pooling. A figure from <a class="footnote-reference" href="#zeiler" id="id9">[1]</a> illustrates this operation beautifully.</p>
+<img alt="deconvent architecture" class="align-left" src="./figures/visualizing_convnet/unpooling.png" />
+</div>
+<div class="section" id="relu">
+<h3>ReLU</h3>
+<p>The result of the unpooling then passes a ReLU. Because ReLU is not symmetric at all with respect to the preactivation, this pass is far from undoing the ReLU of the convolutional network. But I think it is required because we need to pass the unpooled result through a convolutional layer, which expects its input to have passed a ReLU layer.</p>
+</div>
+<div class="section" id="transposed-convolution">
+<h3>Transposed convolution</h3>
+<p>Lastly, the rectified unpooled activations pass a 2d convonlutional layer with its filter flipped horizontally and vertically (i.e. rotated 180 degrees), which is called a transposed convolution. This implies that what we are doing is in some sense backpropagating activations along the pass of the convolution gradient backpropagation. For the detail of why this is so, see <a class="footnote-reference" href="#conv-backprop" id="id10">[7]</a>.</p>
+</div>
+<div class="section" id="deconvolution-network-for-vgg16">
+<h3>Deconvolution network for VGG16</h3>
+<img alt="full architecture" class="align-left" src="./figures/visualizing_convnet/full_architecture.png" />
+<p>To construct a deconvolutional network for the VGG16, what needs to be done is just repeating the above unit for every layer of the convolutional network, that is, we put an unpooling layer for a max pooling layer, a ReLU layer for a ReLU layer, and a transposed convolution for a convolutional layer, then inverts the direction of the propagation. As shown in the left of the above diagram, VGG16 consists of 5 blocks, each block containing multiple convolutional layers and a max pooling layer. Therefore from each block we get a set of max pooling switches when doing a forward propagation of an input image, which is provided as an input for each block of the deconvolutional network in addition to the reconstruction from the previous block of the deconvolutional network, as shown in the right of the above diagram. This is generated from the TensorFlow graph with 3 top features pushed through the deconvolutional network, hence 3 tensors in the dataflow.</p>
+<p>The following diagrams show two blocks of VGG16 that have slightly different structures: block 1 &amp; 2 have two convolutional layers, whereas block 3, 4, &amp; 5 have three convolutional layers. For the detail see Table 1, column D of <a class="footnote-reference" href="#simonyan" id="id11">[2]</a>. Note that here we only use the part of the VGG16 without the fully connected layers.</p>
+<img alt="forward block 1" class="align-left" src="./figures/visualizing_convnet/fwd_block_1.png" />
+<img alt="forward block 3" class="align-left" src="./figures/visualizing_convnet/fwd_block_3.png" />
+</div>
+<div class="section" id="full-deconvolution-in-a-single-pass">
+<h3>Full deconvolution in a single pass</h3>
+<p>The deconvolutional network shown in the above can output reconstructions from activations of a single layer. In order to generate reconstructions of multiple layers, it requires to pass the activations multiple times through the deconvolutional network. That is, if we want to generate reconstructions from both the activations of block 1 and those of block 2, we first push the block 1 activations through the block 1 backpropagation pass of the deconvolutional network, then push the block 2 activations through the block 2 and then block 1 backpropagation pass.</p>
+<img alt="full deconv architecture" class="align-center" src="./figures/visualizing_convnet/full_deconv_architecture.png" />
+<p>We can avoid doing this kind of multiple passes by bundling activations at every step while passing through the backpropagation route only once, which is shown in the left diagram. Note that the dataflow increses by multiple of 3, because we are reconstructing top 3 features from every block in this case. This enables us to run the full deconvolution faster, as we can run the graph on GPU once, thereby minimizing the data transfer between CPU and GPU. In comparison, to get the same deconvolutions by using the previous architecture we need to transfer data between CPU and GPU 5 times. But the previous architecture has its advantage in terms of the less maximum usage of GPU memory, as the full deconvolution in a single pass requires all the data to fit into the GPU memory at the same time, whereas the previous architecture requires just as much memory as it need for reconstructing from a single layer activations. We will discuss more detail later in <a class="reference internal" href="#implementation">Implementation</a>.</p>
+<p>One additional tensor has the value of the indices of the top features, which is picked out by <tt class="docutils literal">tf.nn.top_k</tt> in the unpooling layer, as shown in the diagram for <tt class="docutils literal">block 4</tt>.</p>
+<img alt="block 4 of full deconv architecture" class="align-center" src="./figures/visualizing_convnet/full_deconv_block_4.png" />
+</div>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation</h2>
+<p>In this section we will describe the implementation of VGG16 and its deconvolutional network using TensorFlow, which can be found at the <a class="reference external" href="https://github.com/chan-y-park/visnet/blob/vgg16/visnet.py">vgg16 branch of the GitHub repo</a>.</p>
+<div class="section" id="requirementes">
+<h3>Requirementes</h3>
+<ul class="simple">
+<li>Python 3</li>
+<li>Tensorflow 1.0</li>
+<li>NumPy</li>
+<li>h5py</li>
+<li>pillow</li>
+<li>Flask (to use the web interface defined in <a class="reference external" href="https://github.com/chan-y-park/visnet/blob/vgg16/web_api.py">visnet/web_api.py</a>)</li>
+</ul>
+</div>
+<div class="section" id="using-pretrained-weights">
+<h3>Using pretrained weights</h3>
+<p>Training a large convnet like VGG takes quite much time, so here we use pretrained weights provided by <a class="reference external" href="https://github.com/fchollet/keras">Keras</a>, see <tt class="docutils literal">WEIGHTS_PATH</tt> and <tt class="docutils literal">WEIGHTS_PATH_NO_TOP</tt> defined in <a class="reference external" href="https://github.com/fchollet/keras/blob/master/keras/applications/vgg16.py">keras/applications/vgg16.py</a>.</p>
+<p>The weights are saved in HDF5 format and should be place at <a class="reference external" href="https://github.com/chan-y-park/visnet/tree/vgg16/models">visnet/models</a>. To take a look at the content of the file, it is helpful to use <a class="reference external" href="https://support.hdfgroup.org/products/java/hdfview/">HDFView</a>. In order to read HDF5 file from Python, we can use <a class="reference external" href="http://www.h5py.org/">h5py</a> to access the content via Python dictionaries like the following:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">h5py</span>
+
+<span class="n">weights_f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span>
+    <span class="n">weights_file_path</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># ...</span>
+
+<span class="n">dset_name</span> <span class="o">=</span> <span class="n">block_layer_name</span> <span class="o">+</span> <span class="s1">&#39;_W_1:0&#39;</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">weights_f</span><span class="p">[</span><span class="n">block_layer_name</span><span class="p">][</span><span class="n">dset_name</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+</pre></div>
+<p>Once we have the weights, it is straightforward to build a VGG16 convnet, see <tt class="docutils literal">VisNet._build_forward_network</tt> defined in <a class="reference external" href="https://github.com/chan-y-park/visnet/blob/vgg16/visnet.py">visnet/visnet.py</a> for the detail of how to use the Keras weights file to build a TensorFlow graph for VGG16. But there is a caveat if we want to build a deconvnet in conjunction with the forward graph, which I will explain now.</p>
+</div>
+<div class="section" id="unpooling-and-device-placement">
+<h3>Unpooling and device placement</h3>
+<p>As explained in &quot;<a class="reference internal" href="#unpooling">Unpooling</a>&quot;, to construct a deconvnet we need to save switches of the max poolings while doing the forward propagation in the convolutional network. This is done by using <tt class="docutils literal">tf.nn.max_pool_with_argmax</tt> in <a class="reference external" href="https://github.com/chan-y-park/visnet/blob/vgg16/visnet.py">visnet/visnet.py</a>. One thing to note, though, about <tt class="docutils literal">tf.nn.max_pool_with_argmax</tt> is that this does not have a CPU kernel, meaning that this TensorFlow operation can be executed only on GPU. For example, if you installed a CPU version of TensorFlow, you cannot run it and instead will get the following error:</p>
+<p><tt class="docutils literal">InvalidArgumentError (see above for traceback): Cannot assign a device to node 'forward_network/block1/pool/MaxPoolWithArgmax': Could not satisfy explicit device specification '/device:CPU:0' because no supported kernel for CPU devices is available.</tt></p>
+<p>Because of this lack of CPU kernel for the op, even when I want to put the most of the TensorFlow graph onto CPU, I had to place it on GPU by hand using <tt class="docutils literal">tf.device</tt> like the following:</p>
+<div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;/cpu:0&#39;</span><span class="p">):</span>
+
+    <span class="c1"># ...</span>
+
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;/gpu:0&#39;</span><span class="p">):</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">max_pool_with_argmax</span><span class="p">(</span>
+            <span class="n">prev_layer</span><span class="p">,</span>
+            <span class="n">ksize</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+<p>Fortunately, nesting <tt class="docutils literal">tf.device</tt> statements like the above works well.</p>
+<p>Putting most of the calculation on CPU was needed when I wanted to run this code on a machine that has a very little amount of GPU memory. I wanted to use my old Macbook Pro as a web server to run this program as a WSGI application, because I needed a machine with a GPU but my current web server does not have a GPU. My Macbook Pro is a good machine with a quad-core i7, but its GPU is an old and small one, NVIDIA GeForce GT 650M with 1GB of memory. Still it can utilize CUDA 3.0, which is the minimum for running TensorFlow 1.0, which saved me from buying a graphic card for my server, however the small amount of GPU memory meant I had to be inventive in using the GPU. So I enabled putting most of the work on CPU, but <tt class="docutils literal">tf.nn.max_pool_with_argmax</tt> had to be on GPU.</p>
+<p>Actually, running most of the computation on CPU is not much slower than running most of the computation on GPU in this case, mainly for two reasons. One is that we are not requiring much calculation onto GPU, as we are not training the convnet but are just doing an inference and a small amount of backpropagation for the reconstruction through the deconvnet. Another reason is also related to a lack of the TensorFlow kernel for an operation, this time lack of a GPU kernel for <tt class="docutils literal">tf.scatter_nd</tt> that is used in the TensorFlow graph of the deconvnet. The detail of building the graph of the deconvnet will be covered in &quot;<a class="reference internal" href="#building-deconvolutional-network">Building deconvolutional network</a>&quot;, but without the detail we can easily guess that, because of the op, even when we run the most of the backpropagation through the deconvnet there needs to be a roundtrip transfer between CPU and GPU and that will cost us some performance. I was rather surprised that even though there is such a downside, still it is faster using GPU for the rest of the calculation when doing the deconvolution rather than putting everything on CPU, meaning that GPU computation is really fast and the transfer rate between CPU and GPU is quite reasonable.</p>
+<p>To check the device placement of each TensorFlow op, we can use configuration option <tt class="docutils literal">log_device_placement</tt> of the TensorFlow session in the following way:</p>
+<div class="highlight"><pre><span></span><span class="c1"># ...</span>
+
+<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_graph</span><span class="o">.</span><span class="n">as_default</span><span class="p">():</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">ConfigProto</span><span class="p">(</span>
+        <span class="n">log_device_placement</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">tf_session</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="n">init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+    <span class="n">tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
+
+    <span class="c1"># ...</span>
+</pre></div>
+<p>With <tt class="docutils literal">log_device_placement=True</tt>, we get the logging messages like the following,</p>
+<pre class="literal-block">
+...
+deconv_network/block1/pool/Reshape_1: (Reshape): /job:localhost/replica:0/task:0/gpu:0
+I tensorflow/core/common_runtime/simple_placer.cc:841] deconv_network/block1/pool/Reshape_1: (Reshape)/job:localhost/replica:0/task:0/gpu:0
+deconv_network/block1/pool/unpooled_flattened_0: (ScatterNd): /job:localhost/replica:0/task:0/cpu:0
+I tensorflow/core/common_runtime/simple_placer.cc:841] deconv_network/block1/pool/unpooled_flattened_0: (ScatterNd)/job:localhost/replica:0/task:0/cpu:0
+...
+</pre>
+<p>which shows that indeed <tt class="docutils literal">tf.scatter_nd</tt> is placed on CPU whereas <tt class="docutils literal">tf.reshape</tt> is place on GPU.</p>
+</div>
+<div class="section" id="time-comparison-full-deconv-vs-loops-cpu-vs-gpu">
+<h3>Time comparison: full deconv vs loops, CPU vs GPU</h3>
+<p>In addition to using CPU vs GPU, as we discussed in &quot;<a class="reference internal" href="#full-deconvolution-in-a-single-pass">Full deconvolution in a single pass</a>&quot; there are two different graphs we can build for the deconvnet. Therefore there are four different usage scenarios, and let's compare the time it takes for each combination. The following is done on a machine with i7-7820HK CPU and GTX 1070 GPU (2048 CUDA cores), where</p>
+<ul class="simple">
+<li>&quot;GPU&quot; and &quot;CPU&quot; in the title means using mostly GPU and CPU, respectively,</li>
+<li>&quot;full deconv&quot; means the deconvnet TensorFlow graph is constructed using <tt class="docutils literal">VisNet._build_full_deconv_network</tt> defined in <a class="reference external" href="https://github.com/chan-y-park/visnet/blob/vgg16/visnet.py">visnet/visnet.py</a>,</li>
+<li>&quot;deconv loop&quot; means the deconvnet TensorFlow graph is constructed using <tt class="docutils literal">VisNet._build_deconv_network</tt> defined in <a class="reference external" href="https://github.com/chan-y-park/visnet/blob/vgg16/visnet.py">visnet/visnet.py</a>, then TensorFlow Session for the deconvolution is looped as many times as the number of layers to reconstruct in the following way:</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="c1"># ...</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Doing forward propagation and recording max pool switches...&#39;</span><span class="p">)</span>
+<span class="n">rd</span> <span class="o">=</span> <span class="n">vn</span><span class="o">.</span><span class="n">get_forward_results</span><span class="p">(</span>
+    <span class="n">input_array</span><span class="p">,</span>
+    <span class="n">log_device_placement</span><span class="o">=</span><span class="n">log_device_placement</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">rd</span><span class="p">[</span><span class="s1">&#39;deconv_layers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">block_name</span><span class="p">,</span> <span class="n">block_conf</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">layer_name</span><span class="p">,</span> <span class="n">layer_conf</span> <span class="ow">in</span> <span class="n">block_conf</span><span class="p">:</span>
+        <span class="n">block_layer_name</span> <span class="o">=</span> <span class="n">block_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">layer_name</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Deconvolutioning {}...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">block_layer_name</span><span class="p">))</span>
+        <span class="n">rd</span><span class="p">[</span><span class="s1">&#39;deconv_layers&#39;</span><span class="p">][</span><span class="n">block_layer_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">vn</span><span class="o">.</span><span class="n">get_deconv_result</span><span class="p">(</span>
+            <span class="n">block_name</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">,</span>
+            <span class="n">log_device_placement</span><span class="o">=</span><span class="n">log_device_placement</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<span class="c1"># ...</span>
+</pre></div>
+<div class="section" id="gpu-full-deconv">
+<h4>GPU, full deconv</h4>
+<div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">timeit</span>
+
+<span class="c1"># ...</span>
+
+<span class="n">rd</span> <span class="o">=</span> <span class="n">get_all_deconv_results</span><span class="p">(</span>
+    <span class="n">input_image</span><span class="p">,</span>
+    <span class="n">log_device_placement</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">logdir</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">,</span>
+    <span class="n">num_top_features</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">use_cpu</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">full_deconv</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+<p><tt class="docutils literal">1 loop, best of 3: 1.5 s per loop</tt></p>
+</div>
+<div class="section" id="gpu-deconv-loop">
+<h4>GPU, deconv loop</h4>
+<div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">timeit</span>
+
+<span class="c1"># ...</span>
+
+<span class="n">rd</span> <span class="o">=</span> <span class="n">get_all_deconv_results</span><span class="p">(</span>
+    <span class="n">input_image</span><span class="p">,</span>
+    <span class="n">log_device_placement</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">logdir</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">,</span>
+    <span class="n">num_top_features</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">use_cpu</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">full_deconv</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+<p><tt class="docutils literal">1 loop, best of 3: 2.29 s per loop</tt></p>
+</div>
+<div class="section" id="cpu-full-deconv">
+<h4>CPU, full deconv</h4>
+<div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">timeit</span>
+
+<span class="c1"># ...</span>
+
+<span class="n">rd</span> <span class="o">=</span> <span class="n">get_all_deconv_results</span><span class="p">(</span>
+    <span class="n">input_image</span><span class="p">,</span>
+    <span class="n">log_device_placement</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">logdir</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">,</span>
+    <span class="n">num_top_features</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">use_cpu</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">full_deconv</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+<p><tt class="docutils literal">1 loop, best of 3: 3.4 s per loop</tt></p>
+</div>
+<div class="section" id="cpu-deconv-loop">
+<h4>CPU, deconv loop</h4>
+<div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">timeit</span>
+
+<span class="c1"># ...</span>
+
+<span class="n">rd</span> <span class="o">=</span> <span class="n">get_all_deconv_results</span><span class="p">(</span>
+    <span class="n">input_image</span><span class="p">,</span>
+    <span class="n">log_device_placement</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">logdir</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">,</span>
+    <span class="n">num_top_features</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">use_cpu</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">full_deconv</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+<p><tt class="docutils literal">1 loop, best of 3: 4.23 s per loop</tt></p>
+</div>
+<div class="section" id="comparison">
+<h4>Comparison</h4>
+<p>As expected, using mostly GPU and the full deconvolutional graph shows the best performance, but the other cases also turned out to be acceptable, for the reasons we discussed previously.</p>
+</div>
+</div>
+<div class="section" id="building-deconvolutional-network">
+<h3>Building deconvolutional network</h3>
+<p>So how can we build the TensorFlow graph for the deconvolutional network? First remember that we construct the TensorFlow graph for the forward-propagating convolutional network by repeatedly layering the following structure,</p>
+<p>`` tf.nn.conv2d &gt; tf.nn.relu &gt; tf.nn.conv2d &gt; ... &gt; tf.nn.max_pool_with_argmax``</p>
+<p>which consists a block of the VGG16. For more detail, see <tt class="docutils literal">VisNet._build_forward_network</tt> defined in <a class="reference external" href="https://github.com/chan-y-park/visnet/blob/vgg16/visnet.py">visnet/visnet.py</a>. The corresponding block of the backpropagating deconvolutional network then would be constructed in the TensorFlow graph in the following way:</p>
+<p>`` tf.scatter_nd &gt; tf.nn.relu &gt; tf.conv2d_transpose &gt; ... ``</p>
+<p>Here <tt class="docutils literal">tf.scatter_nd</tt> takes the switches of the corresponding max pooling layer and its activations(=outputs) as arguments and unpool the pooling, and <tt class="docutils literal">tf.conv2d_tranpose</tt> takes the same filter, stride, and padding of the corresponding <tt class="docutils literal">tf.nn.conv2d</tt> and does the deconvolution. The actual operations include somewhat complicated reshaping of tensors, which are described in <tt class="docutils literal">VisNet._build_deconv_network</tt> (and <tt class="docutils literal">VisNet._build_full_deconv_network</tt>) defined in <a class="reference external" href="https://github.com/chan-y-park/visnet/blob/vgg16/visnet.py">visnet/visnet.py</a>.</p>
+</div>
+</div>
+<div class="section" id="analysis">
+<h2>Analysis</h2>
+<div class="section" id="using-test-filters-in-transposed-convolution">
+<h3>Using test filters in transposed convolution</h3>
+<p>Before applying the deconvolution to images, let's first do some experiment using small arrays to see how it works. We will use as input a matrix with ones, corresponding to a white image.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="n">size</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">array([[ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.]])</span>
+</pre></div>
+<p>And let's use a filter with all ones as well.</p>
+<div class="highlight"><pre><span></span><span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">F</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">array([[ 1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.]])</span>
+</pre></div>
+<p>If we do the convolution for the input using the filter, the result is:</p>
+<div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">as_default</span><span class="p">():</span>
+    <span class="n">t_input</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">t_filter</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+    <span class="n">init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+    <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
+
+    <span class="n">t_output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span><span class="n">t_input</span><span class="p">,</span> <span class="n">t_filter</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">)</span>
+
+    <span class="n">B</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">t_output</span><span class="p">)</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">array([[ 4.,  6.,  6.,  6.,  6.,  6.,  6.,  6.,  6.,  4.],</span>
+<span class="go">       [ 6.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  6.],</span>
+<span class="go">       [ 6.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  6.],</span>
+<span class="go">       [ 6.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  6.],</span>
+<span class="go">       [ 6.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  6.],</span>
+<span class="go">       [ 6.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  6.],</span>
+<span class="go">       [ 6.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  6.],</span>
+<span class="go">       [ 6.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  6.],</span>
+<span class="go">       [ 6.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  9.,  6.],</span>
+<span class="go">       [ 4.,  6.,  6.,  6.,  6.,  6.,  6.,  6.,  6.,  4.]], dtype=float32)</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">g</span><span class="o">.</span><span class="n">as_default</span><span class="p">():</span>
+    <span class="n">t_input</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">t_filter</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+    <span class="n">init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+    <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
+
+    <span class="n">t_output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv2d_transpose</span><span class="p">(</span>
+        <span class="n">t_input</span><span class="p">,</span> <span class="n">t_filter</span><span class="p">,</span>
+        <span class="n">output_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">A_recons</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">t_output</span><span class="p">)</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A_recons</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">array([[ 25.,  40.,  45.,  45.,  45.,  45.,  45.,  45.,  40.,  25.],</span>
+<span class="go">       [ 40.,  64.,  72.,  72.,  72.,  72.,  72.,  72.,  64.,  40.],</span>
+<span class="go">       [ 45.,  72.,  81.,  81.,  81.,  81.,  81.,  81.,  72.,  45.],</span>
+<span class="go">       [ 45.,  72.,  81.,  81.,  81.,  81.,  81.,  81.,  72.,  45.],</span>
+<span class="go">       [ 45.,  72.,  81.,  81.,  81.,  81.,  81.,  81.,  72.,  45.],</span>
+<span class="go">       [ 45.,  72.,  81.,  81.,  81.,  81.,  81.,  81.,  72.,  45.],</span>
+<span class="go">       [ 45.,  72.,  81.,  81.,  81.,  81.,  81.,  81.,  72.,  45.],</span>
+<span class="go">       [ 45.,  72.,  81.,  81.,  81.,  81.,  81.,  81.,  72.,  45.],</span>
+<span class="go">       [ 40.,  64.,  72.,  72.,  72.,  72.,  72.,  72.,  64.,  40.],</span>
+<span class="go">       [ 25.,  40.,  45.,  45.,  45.,  45.,  45.,  45.,  40.,  25.]], dtype=float32)</span>
+</pre></div>
+<p>We can notice two things. First, there is an unevitable edge effect, but it will not be signigicant once the size of the image is large enough. More significant issue is that each &quot;pixel&quot; of the reconstruction has much larger value compared to the original pixel value of 1. This is because we used the filter with all 1's, with which the convolution and the transposed convonlution add up all the pixels linearly and therefore make the value become large. Therefore we need to renormalize the reconstruction before transforming it to an image.</p>
+<p>However, it seems that it is not a good idea to renormalize the result of the deconvolution at every layer, as it may interfere with the bias values and therefore the subsequent ReLU nonlinearity. Note that we don't renormalize the output of the forward propagation, therefore the biases are trained relative to the unnormlized values.</p>
+<p>So we learend that, when the sum of the values of a filter is greater than one, the convonlution and the transposed convolution will result in reconstructions with large values. To cross-check that, let's use the following filter.</p>
+<div class="highlight"><pre><span></span><span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">F</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">array([[ 0.,  0.,  0.],</span>
+<span class="go">       [ 0.,  1.,  0.],</span>
+<span class="go">       [ 0.,  0.,  0.]], dtype=float32)</span>
+</pre></div>
+<p>Doing the same convolution and transposed convolution, we get</p>
+<div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">array([[ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.]], dtype=float32)</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A_recons</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">array([[ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.],</span>
+<span class="go">       [ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.]], dtype=float32)</span>
+</pre></div>
+<p>which confirms that, when the sum of the filter elements is one, both the convolution and the transposed convolution maintains the pixel values and the deconvolution successfully reconstructs the original image.</p>
+</div>
+<div class="section" id="max-pooling-and-unpooling-a-white-image">
+<h3>Max pooling and unpooling a white image</h3>
+<p>Let's consider how a white image is reconstructed via unpooling with a filter like</p>
+<pre class="literal-block">
+[[1/9, 1/9, 1/9],
+ [1/9, 1/9, 1/9],
+ [1/9, 1/9, 1/9]].
+</pre>
+<p>The result is (see <a class="reference external" href="./figures/visualizing_convnet/deconv_test.svg">deconv_test.svg</a> for the detail)</p>
+<a class="reference external image-reference" href="./figures/visualizing_convnet/deconv_test.svg"><object class="align-left" data="./figures/visualizing_convnet/deconv_test.svg" style="width: 100%;" type="image/svg+xml">deconv test</object></a>
+<p>Each row corresponds to one block of the convnet and the deconvnet, and each column corresponds to a single layer, either a convolutional layer or a pooling layer for the convnet, and either a transposed convolutional layer or an unpooling layer for the deconvnet. In each panel, the left image is the activation in the forward-propagating convnet, and the right image is its reconstruction via the deconvnet. We can see that inevitably the backpropagated reconstructions are quite lossy compared to the forward-propagated activations due to unpoolings.</p>
+</div>
+<div class="section" id="a-few-deconvolution-results">
+<h3>A few deconvolution results</h3>
+<p>Now let's use real images and the filters of VGG16 to study the deconvnet.</p>
+<div class="section" id="dog">
+<h4>Dog</h4>
+<p>For the following input image</p>
+<img alt="dog" src="./figures/visualizing_convnet/dog.jpg" />
+<p>the classification result from VGG16 is</p>
+<pre class="literal-block">
+[[('n02099601', 'golden_retriever', 0.79125667),
+  ('n02101388', 'Brittany_spaniel', 0.021943001),
+  ('n02102318', 'cocker_spaniel', 0.019079773),
+  ('n02099712', 'Labrador_retriever', 0.014001164),
+  ('n02113023', 'Pembroke', 0.013874436)]]
+</pre>
+<p>and the deconv result is (see <a class="reference external" href="./figures/visualizing_convnet/dog.svg">dog.svg</a> for the detail)</p>
+<a class="reference external image-reference" href="./figures/visualizing_convnet/dog.svg"><object class="align-left" data="./figures/visualizing_convnet/dog.svg" style="width: 100%;" type="image/svg+xml">deconv dog</object></a>
+<p>where for each panel the left image shows activations overlayed onto the input image, and the right image shows the reconstruction of the activations via deconvnet, and the label at the top of each panet is the index of the corresponding feature in the layer denoted on the left of each row. The three panels are the top three features of the layer in terms of the norm of the activations.</p>
+<p>As is usually described, features in the lower layers are activated over wide areas of the input image, whereas feature in the upper layers are activated for certain features of the image. For example, feature #44 of <tt class="docutils literal">block4_pool</tt> seems to be activated by the nose of the dog.</p>
+</div>
+<div class="section" id="jaguar">
+<h4>Jaguar</h4>
+<p>For the following input image</p>
+<img alt="jaguar" src="./figures/visualizing_convnet/jaguar.jpg" />
+<p>the classification result from VGG16 is</p>
+<pre class="literal-block">
+[[('n02128925', 'jaguar', 0.52279162),
+  ('n02130308', 'cheetah', 0.29578739),
+  ('n02128385', 'leopard', 0.17945068),
+  ('n02128757', 'snow_leopard', 0.0014650807),
+  ('n02127052', 'lynx', 0.00045005363)]]
+</pre>
+<p>and the deconv result is (see <a class="reference external" href="./figures/visualizing_convnet/jaguar.svg">jaguar.svg</a> for the detail)</p>
+<a class="reference external image-reference" href="./figures/visualizing_convnet/jaguar.svg"><object class="align-left" data="./figures/visualizing_convnet/jaguar.svg" style="width: 100%;" type="image/svg+xml">deconv jaguar</object></a>
+<p>We can see that, for this input image, the convnet focuses on the leopard pattern, which is understandably a good strategy for identifying such a big cat as a jaguar or a leopard.</p>
+</div>
+<div class="section" id="orangutan">
+<h4>Orangutan</h4>
+<p>For the following input image</p>
+<img alt="orangutan" src="./figures/visualizing_convnet/orangutan.jpg" />
+<p>the classification result from VGG16 is</p>
+<pre class="literal-block">
+[[('n02480495', 'orangutan', 0.99796802),
+  ('n02492660', 'howler_monkey', 0.00062656007),
+  ('n02483708', 'siamang', 0.00049100351),
+  ('n02480855', 'gorilla', 0.00033229668),
+  ('n02481823', 'chimpanzee', 0.00017568616)]]
+</pre>
+<p>and the deconv result is (see <a class="reference external" href="./figures/visualizing_convnet/orangutan.svg">orangutan.svg</a> for the detail)</p>
+<a class="reference external image-reference" href="./figures/visualizing_convnet/orangutan.svg"><object class="align-left" data="./figures/visualizing_convnet/orangutan.svg" style="width: 100%;" type="image/svg+xml">deconv orangutan</object></a>
+<p>Note that in the top layers, the convnet focuses on the facial aspect of the orangutan, again a reasonable strategy for the correct classification. In comparison, it is hard to understand why the top features in the lower layers focus on the edges of the input image.</p>
+</div>
+<div class="section" id="shark">
+<h4>Shark</h4>
+<p>For the following input image</p>
+<img alt="shark" src="./figures/visualizing_convnet/shark.jpg" />
+<p>the classification result from VGG16 is</p>
+<pre class="literal-block">
+[[('n01484850', 'great_white_shark', 0.97682512),
+  ('n01491361', 'tiger_shark', 0.022970665),
+  ('n01494475', 'hammerhead', 0.00014554927),
+  ('n02071294', 'killer_whale', 4.8408299e-05),
+  ('n02640242', 'sturgeon', 2.8688476e-06)]]
+</pre>
+<p>and the deconv result is (see <a class="reference external" href="./figures/visualizing_convnet/shark.svg">shark.svg</a> for the detail)</p>
+<a class="reference external image-reference" href="./figures/visualizing_convnet/shark.svg"><object class="align-left" data="./figures/visualizing_convnet/shark.svg" style="width: 100%;" type="image/svg+xml">deconv shark</object></a>
+<p>The convet interestingly focuses on the fin of the shark and correctly classifies the image with the probability of over 97%!</p>
+</div>
+<div class="section" id="ambulance">
+<h4>Ambulance</h4>
+<p>For the following input image</p>
+<img alt="car" src="./figures/visualizing_convnet/car.jpg" />
+<p>the classification result from VGG16 is</p>
+<pre class="literal-block">
+[[('n02701002', 'ambulance', 0.97389108),
+  ('n03977966', 'police_van', 0.01909747),
+  ('n03769881', 'minibus', 0.0058080256),
+  ('n03796401', 'moving_van', 0.00097194762),
+  ('n04065272', 'recreational_vehicle', 0.00013027726)]]
+</pre>
+<p>and the deconv result is (see <a class="reference external" href="./figures/visualizing_convnet/car.svg">car.svg</a> for the detail)</p>
+<a class="reference external image-reference" href="./figures/visualizing_convnet/car.svg"><object class="align-left" data="./figures/visualizing_convnet/car.svg" style="width: 100%;" type="image/svg+xml">deconv car</object></a>
+<p>The convent focuses on the wheel, which is the usual strategy for a convet to identify a car. But VGG16 correctly identifies the car as an ambulance, and when we see <tt class="docutils literal">block1_pool</tt> layer features we discover that the convnet is activated by the red and the white colors of the car, which may be the reason for the successful classification.</p>
+</div>
+</div>
+</div>
+<div class="section" id="coming-up">
+<h2>Coming up</h2>
+<p>A deconvolutional network we studied here shows various interesting and informative results. But what is done here is very rudimentary investigation. For example, a better way to see how each feature is activated is scanning over the whole training image set and identify images that maximally activate the feature, as done in <a class="footnote-reference" href="#zeiler" id="id17">[1]</a>, or generating an input image that maximally activate a certain feature, as was done in [#Yosinski]. But both require extensive amount of computation so we will not try those visualizations here.</p>
+<p>Another interesting idea is incorporating fully connected layers so that the top activation of the classification layer can be reconstructed via deconvnet, which is done in <a class="footnote-reference" href="#shelhamer" id="id18">[3]</a>. This sounds an interesting idea and is a natural extension of the current architecture we discussed here, so that will be the topic of the next post of this series.</p>
+<p>Lastly, a different idea called &quot;atrous convolution&quot; looks promising in terms of getting reconstructions of better resolution, so I am planning to study that idea in this series in the future.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<table class="docutils footnote" frame="void" id="zeiler" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id8">2</a>, <a class="fn-backref" href="#id9">3</a>, <a class="fn-backref" href="#id17">4</a>)</em> Visualizing and Understanding Convolutional Networks, <a class="reference external" href="https://arxiv.org/abs/1311.2901">https://arxiv.org/abs/1311.2901</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="simonyan" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id11">2</a>)</em> Very Deep Convolutional Networks for Large-Scale Image Recognition, <a class="reference external" href="https://arxiv.org/abs/1409.1556">https://arxiv.org/abs/1409.1556</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="shelhamer" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[3]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id18">2</a>)</em> Fully Convolutional Networks for Semantic Segmentation, <a class="reference external" href="https://arxiv.org/abs/1605.06211">https://arxiv.org/abs/1605.06211</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="chen" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[4]</a></td><td>DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs, <a class="reference external" href="https://arxiv.org/abs/1606.00915">https://arxiv.org/abs/1606.00915</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="deepvis" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[5]</td><td><em>(<a class="fn-backref" href="#id5">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> DeepVis Toolbox, <a class="reference external" href="https://github.com/yosinski/deep-visualization-toolbox">https://github.com/yosinski/deep-visualization-toolbox</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="yosinski" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[6]</a></td><td>Understanding Neural Networks Through Deep Visualization, <a class="reference external" href="https://arxiv.org/abs/1506.06579">https://arxiv.org/abs/1506.06579</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="conv-backprop" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id10">[7]</a></td><td><a class="reference external" href="https://grzegorzgwardys.wordpress.com/2016/04/22/8/">https://grzegorzgwardys.wordpress.com/2016/04/22/8/</a>, <a class="reference external" href="http://soumith.ch/ex/pages/2014/08/07/why-rotate-weights-convolution-gradient/">http://soumith.ch/ex/pages/2014/08/07/why-rotate-weights-convolution-gradient/</a></td></tr>
+</tbody>
+</table>
+</div>
+
+            </div>
+            <!-- /.entry-content -->
+    <hr />
+    <!-- AddThis Button BEGIN -->
+    <div class="addthis_toolbox addthis_default_style">
+            <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+            <a class="addthis_button_tweet"></a>
+            <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    </div>
+    <!-- AddThis Button END -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Comments</h2>
+
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            var disqus_shortname = 'chan-y-park'; // required: replace example with your forum shortname
+
+            var disqus_identifier = 'visualizing_convnet';
+            var disqus_url = 'http://chan-y-park.github.io/blog/visualizing_convnet.html';
+
+            var disqus_config = function () {
+                this.page.url = disqus_url;
+                this.page.identifier = disqus_identifier;
+                this.language = "en";
+            };
+
+            (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+            s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Follow</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="http://github.com/chan-y-park"><i class="fa fa-github-square fa-lg"></i> GitHub</a></li>
+                <li class="list-group-item"><a href="http://www.linkedin.com/in/chan-youn-park-51a13b63"><i class="fa fa-linkedin-square fa-lg"></i> LinkedIn</a></li>
+                <li class="list-group-item"><a href="http://twitter.com/chan_y_park"><i class="fa fa-twitter-square fa-lg"></i> Twitter</a></li>
+                <li class="list-group-item"><a href="http://www.facebook.com/chan.y.park.5"><i class="fa fa-facebook-square fa-lg"></i> Facebook</a></li>
+              </ul>
+            </li>
+
+
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="http://chan.physics.rutgers.edu/loom" target="_blank">
+                loom
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="http://chan.physics.rutgers.edu/cproj" target="_blank">
+                cproj
+            </a>
+        </li>
+      </ul>
+    </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Chan Y. Park
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="./theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="./theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="./theme/js/respond.min.js"></script>
+
+    <!-- Disqus -->
+    <script type="text/javascript">
+    /*
+        var disqus_shortname = 'chan-y-park'; // required: replace example with your forum shortname
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+    */
+    </script>
+    <!-- End Disqus Code -->
+
+        <script type="text/javascript">var addthis_config = {"data_track_addressbar": true};</script>
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=github blog"></script>
+</body>
+</html>
