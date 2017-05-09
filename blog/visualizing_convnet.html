@@ -21,7 +21,7 @@
         <meta property="og:title" content="Visualizing Convolutional Network"/>
         <meta property="og:url" content="./visualizing_convnet.html"/>
         <meta property="og:description" content="In this post I will describe my ongoing project of understanding VGG16 convolutional network using deconvnet."/>
-        <meta property="article:published_time" content="2017-05-08" />
+        <meta property="article:published_time" content="2017-05-09" />
             <meta property="article:section" content="Deep Learning" />
             <meta property="article:tag" content="machine learning" />
             <meta property="article:tag" content="deep learning" />
@@ -99,7 +99,7 @@ Chan Y. Park            </a>
 <footer class="post-info">
     <span class="label label-default">Date</span>
     <span class="published">
-        <i class="fa fa-calendar"></i><time datetime="2017-05-08T18:21:32.293082-04:00"> Mon 08 May 2017</time>
+        <i class="fa fa-calendar"></i><time datetime="2017-05-09T02:23:29.400159-04:00"> Tue 09 May 2017</time>
     </span>
 
 
@@ -168,7 +168,10 @@ Chan Y. Park            </a>
 <ul class="simple">
 <li><a class="reference external" href="https://github.com/chan-y-park/visnet/tree/vgg16">https://github.com/chan-y-park/visnet/tree/vgg16</a></li>
 </ul>
-<p>to understand the deconvolution network of <a class="footnote-reference" href="#zeiler" id="id1">[1]</a> using VGG16 convolutional network architecture of <a class="footnote-reference" href="#simonyan" id="id2">[2]</a>, because both architectures are simple and straightforward yet have key ideas in the development of convolutional networks. In addition, I will describe a web user interface that is built for the convenience of the visualization.</p>
+<p>to understand the deconvolution network of <a class="footnote-reference" href="#zeiler" id="id1">[1]</a> using VGG16 convolutional network architecture of <a class="footnote-reference" href="#simonyan" id="id2">[2]</a>, because both architectures are simple and straightforward yet have key ideas in the development of convolutional networks. In addition, I will describe a web user interface that is built for the convenience of the visualization, which can be run on a local machine and is also available for trying out at</p>
+<ul class="simple">
+<li><a class="reference external" href="http://chanypark.ddns.net:8000">http://chanypark.ddns.net:8000</a></li>
+</ul>
 <p>This is just a first step for this project. In the future I will include more architectures for visualizing convolutional networks, including fully convonlutional networks <a class="footnote-reference" href="#shelhamer" id="id3">[3]</a> and atrous convonlution <a class="footnote-reference" href="#chen" id="id4">[4]</a>, as well as deeper convolutional networks like Inception and ResNet.</p>
 <p>I will also add more functionality to the web user interface so that it can be as useful as <a class="footnote-reference" href="#deepvis" id="id5">[5]</a> described in <a class="footnote-reference" href="#yosinski" id="id6">[6]</a>. What I want to do differently in comparison with <a class="footnote-reference" href="#deepvis" id="id7">[5]</a> is 1) I will use TensorFlow instead of Caffe, and 2) I will implement a web user interface using <a class="reference external" href="http://flask.pocoo.org/">Flask</a> instead of GUI, both for portability and for the purpose of putting it on a server as a web app so that anyone can try visualizing how a convolutional network works.</p>
 <div class="section" id="architecture">
