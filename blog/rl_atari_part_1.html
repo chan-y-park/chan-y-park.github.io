@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Reinforcement Learning via Atari Games, Part 1 - Chan Y. Park</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="./favicon.ico" rel="icon">
+
+<link rel="canonical" href="./rl_atari_part_1.html">
+
+        <meta name="author" content="Chan Y. Park" />
+        <meta name="keywords" content="machine learning,deep learning,reinforcement learning,tensorflow" />
+        <meta name="description" content="This is the first of a series of blog posts that will describe my project of implementing reinforcement learning of Atari games using TensorFlow and OpenAI Gym." />
+
+        <meta property="og:site_name" content="Chan Y. Park" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Reinforcement Learning via Atari Games, Part 1"/>
+        <meta property="og:url" content="./rl_atari_part_1.html"/>
+        <meta property="og:description" content="This is the first of a series of blog posts that will describe my project of implementing reinforcement learning of Atari games using TensorFlow and OpenAI Gym."/>
+        <meta property="article:published_time" content="2017-05-25" />
+            <meta property="article:section" content="Deep Learning" />
+            <meta property="article:tag" content="machine learning" />
+            <meta property="article:tag" content="deep learning" />
+            <meta property="article:tag" content="reinforcement learning" />
+            <meta property="article:tag" content="tensorflow" />
+            <meta property="article:author" content="Chan Y. Park" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="./theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="./theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="./theme/css/pygments/default.css" rel="stylesheet">
+    <link rel="stylesheet" href="./theme/css/style.css" type="text/css"/>
+        <link href="./static/custom.css" rel="stylesheet">
+
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="./" class="navbar-brand">
+Chan Y. Park            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                         <li><a href="./pages/about.html">
+                             About Me
+                          </a></li>
+                        <li class="active">
+                            <a href="./category/deep-learning.html">Deep learning</a>
+                        </li>
+                        <li >
+                            <a href="./category/experiences.html">Experiences</a>
+                        </li>
+                        <li >
+                            <a href="./category/python.html">Python</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="./rl_atari_part_1.html"
+                       rel="bookmark"
+                       title="Permalink to Reinforcement Learning via Atari Games, Part 1">
+                        Reinforcement Learning via Atari Games, Part 1
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2017-05-25T17:56:38.713112-04:00"> Thu 25 May 2017</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="./tag/machine-learning.html">machine learning</a>
+        /
+	<a href="./tag/deep-learning.html">deep learning</a>
+        /
+	<a href="./tag/reinforcement-learning.html">reinforcement learning</a>
+        /
+	<a href="./tag/tensorflow.html">tensorflow</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        TeX: {
+            Macros: {
+                dd: "{\\mathrm{d}}",
+                ee: "{\\mathrm{e}}",
+                ii: "{\\mathrm{i}}",
+                bR: "{\\mathbb{R}}",
+                bS: "{\\mathbb{S}}",
+                bZ: "{\\mathbb{Z}}",
+            },
+            equationNumbers: { autoNumber: "AMS" }
+        }
+    });
+</script><div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id32">Introduction</a></li>
+<li><a class="reference internal" href="#requirements" id="id33">Requirements</a></li>
+<li><a class="reference internal" href="#architecture" id="id34">Architecture</a></li>
+<li><a class="reference internal" href="#implementation" id="id35">Implementation</a><ul>
+<li><a class="reference internal" href="#difference-between-ale-and-openai-gym" id="id36">Difference between ALE and OpenAI Gym</a></li>
+<li><a class="reference internal" href="#inside-openai-gym" id="id37">Inside OpenAI Gym</a></li>
+<li><a class="reference internal" href="#parameters-of-tf-train-rmspropoptimizer" id="id38">Parameters of <tt class="docutils literal">tf.train.RMSPropOptimizer</tt></a></li>
+<li><a class="reference internal" href="#preprocessing" id="id39">Preprocessing</a></li>
+<li><a class="reference internal" href="#padding-of-convolution" id="id40">Padding of convolution</a></li>
+<li><a class="reference internal" href="#reward-rescaling" id="id41">Reward rescaling</a></li>
+<li><a class="reference internal" href="#numpy-memoryerror" id="id42">NumPy MemoryError</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#training" id="id43">Training</a><ul>
+<li><a class="reference internal" href="#vs-6-actions" id="id44">4 vs 6 actions</a></li>
+<li><a class="reference internal" href="#deterministic-vs-stochastic-frame-skipping" id="id45">Deterministic vs stochastic frame skipping</a></li>
+<li><a class="reference internal" href="#anomaly" id="id46">Anomaly?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#result" id="id47">Result</a></li>
+<li><a class="reference internal" href="#coming-up" id="id48">Coming up</a></li>
+<li><a class="reference internal" href="#references" id="id49">References</a></li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>This is the first of <a class="reference external" href="./rl_atari.html">a series of blog posts</a> that will describe my project</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/chan-y-park/rl-atari">https://github.com/chan-y-park/rl-atari</a></li>
+</ul>
+<p>of implementing reinforcement learning of Atari games using <a class="reference external" href="https://www.tensorflow.org/">TensorFlow</a> and <a class="reference external" href="https://gym.openai.com/">OpenAI Gym</a>. This project is meant to be a way of self-studying recent developments of reinforcement learning, so it will start with a simpler implementation and then evolve into more advanced and diverse one. I am planning to describe the process incrementally so that this series of post will serve as a journal book for myself as well as a guide for others who want to try a similar project for themselves.</p>
+<p>In this post I focus on a branch of the project,</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/chan-y-park/rl-atari/tree/simple_dqn">https://github.com/chan-y-park/rl-atari/tree/simple_dqn</a></li>
+</ul>
+<p>and will explain how to reproduce the architecture and the experiment of <a class="footnote-reference" href="#mnih13" id="id1">[1]</a>, where a relatively small neural network was trained via reinforcement learning to successfully play various Atari games using <a class="reference external" href="https://github.com/stella-emu/stella">Stella</a> emulator. There is a second paper <a class="footnote-reference" href="#mnih15" id="id2">[2]</a> by the same group with an enhanced architecture and more detailed description of the choice of the hyperparameters for training, and we will use those hyperparameters when there is no explicit description of such a parameter in <a class="footnote-reference" href="#mnih13" id="id3">[1]</a>. In the following posts of this series I will implement the enhanced architecture and compare the results.</p>
+<p>There are similar projects of others that use TensorFlow to reproduce the result of <a class="footnote-reference" href="#mnih15" id="id4">[2]</a> that I have frequently referred to.</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/gliese581gg/DQN_tensorflow">https://github.com/gliese581gg/DQN_tensorflow</a></li>
+<li><a class="reference external" href="https://github.com/devsisters/DQN-tensorflow">https://github.com/devsisters/DQN-tensorflow</a></li>
+<li><a class="reference external" href="https://github.com/songrotek/DQN-Atari-TensorFlow">https://github.com/songrotek/DQN-Atari-TensorFlow</a></li>
+</ul>
+<p>Here I will focus on the simpler architecture of <a class="footnote-reference" href="#mnih13" id="id5">[1]</a>, and extend it to <a class="footnote-reference" href="#mnih15" id="id6">[2]</a> in the following posts.</p>
+<p>The original Lua/Torch code for <a class="footnote-reference" href="#mnih15" id="id7">[2]</a> can be found at:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://sites.google.com/a/deepmind.com/dqn/">https://sites.google.com/a/deepmind.com/dqn/</a></li>
+</ul>
+<p>which I also have studied from part to part to figure out the details that are unclear in the papers.</p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements</h2>
+<p>The requirements to run <a class="footnote-reference" href="#simple-dqn" id="id8">[3]</a> are:</p>
+<ul class="simple">
+<li>Python 3</li>
+<li>NumPy</li>
+<li>TensorFlow 1.0</li>
+<li>OpenAI Gym installed with <tt class="docutils literal">gym[all]</tt></li>
+<li><a class="reference external" href="https://python-pillow.org/">Pillow</a></li>
+</ul>
+<p>The difference from the other TensorFlow projects I mentioned previously is that they are using Python 2, TensorFlow versions prior to 1.0, OpenCV instead of Pillow, and <a class="reference external" href="http://www.arcadelearningenvironment.org/">ALE</a> rather than OpenAI Gym. My choice are not particularly superior in terms of performance, but I think is easier to install because all my requirements can be installed via <tt class="docutils literal">pip</tt>.</p>
+<p>That is why I used Pillow instead of OpenCV, which is definitely more powerful as a Image Processing Library, because OpenCV with Python binding is somewhat notorious to properly install, see <a class="reference external" href="http://www.pyimagesearch.com/2016/10/24/ubuntu-16-04-how-to-install-opencv/">this guide</a>.</p>
+<p>A similar reasoning applies for the choice of OpenAI Gym over ALE. Although ALE is not that difficult to install from the source, it requires some work to install it and run it using Python 3, for example instead of the following</p>
+<div class="highlight"><pre><span></span><span class="n">ale</span><span class="o">.</span><span class="n">getInt</span><span class="p">(</span><span class="s1">&#39;frame_skip&#39;</span><span class="p">)</span>
+</pre></div>
+<p>you have to use</p>
+<div class="highlight"><pre><span></span><span class="n">ale</span><span class="o">.</span><span class="n">getInt</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;frame_skip&#39;</span><span class="p">)</span>
+</pre></div>
+<p>Even though what is inside the OpenAI Gym Atari environment is a Python 3 wrapper of ALE, so it may be more straightforward to use ALE directly without using the whole OpenAI Gym, I think it would be advantageous to build a reinforcement learning system around OpenAI Gym because it is more than just an Atari emulator and we can expect to generalize to other environments using the same architecture if we stick to using the API of OpenAI Gym. If you are interested in using just ALE but on Python 3, instead of using OpenAI Gym you can use a thin Python 3 wrapper that OpenAI Gym provides, <a class="reference external" href="https://github.com/openai/atari-py">atari-py</a>.</p>
+<p>The purpose of this project is building a simpler system and that explains why I made such choices. But in the following projects we will make changes to boost up the performance.</p>
+</div>
+<div class="section" id="architecture">
+<h2>Architecture</h2>
+<img alt="simple_dqn_graph" class="align-center" src="./figures/rl_atari/simple_dqn_graph.png" />
+<p>The Q-network of <a class="footnote-reference" href="#mnih13" id="id9">[1]</a> is simple and has the following layers:</p>
+<ul class="simple">
+<li>First it takes a tensor of dimension <tt class="docutils literal">[84, 84, 4]</tt> as an input, which is a stack of four grayscale images preprocessed from the screen captured from the Atari emulator.</li>
+<li>The next layer is a 2d convolution layer, with a filter of dimension <tt class="docutils literal">[height, width, in, out] = [8, 8, 4, 16]</tt> and a stride of <tt class="docutils literal">4</tt>, followed by a ReLU layer. The resulting tensor is of dimension <tt class="docutils literal">[20, 20, 16]</tt>.</li>
+<li>Then there is another 2d convolution layer, with a filter of dimension <tt class="docutils literal">[4, 4, 16, 32]</tt> and a stride of <tt class="docutils literal">2</tt>, followed by a ReLU layer. The output of this layer is of dimension <tt class="docutils literal">[9, 9, 32]</tt>.</li>
+<li>The previous output is flattened and used as an input for the first fully connected layer followed by a ReLU layer, whose output is of dimension <tt class="docutils literal">[256]</tt>.</li>
+<li>The last layer is another fully connected layer without any nonlinear unit, and the output has the same dimension as the number of actions.</li>
+</ul>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation</h2>
+<div class="section" id="difference-between-ale-and-openai-gym">
+<h3>Difference between ALE and OpenAI Gym</h3>
+<p>There are various differences between the initialization of the ALE Atari environment we get from ALE is different from that of the OpenAI Gym environment.</p>
+<ul class="simple">
+<li>Even if we use the same <tt class="docutils literal">breakout.bin</tt> ROM file, the minimal action set from ALE has <em>four</em> actions (0, 1, 3, 4), whereas that from OpenAI Gym has <em>six</em> actions (0,  1,  3,  4, 11, 12). I could not figure out why this is the case, even though I took a quick look at the C++ source codes. I hope to figure this out later after taking a good look at the source codes.</li>
+<li>The default value of ALE's <tt class="docutils literal">frame_skip</tt> is 4, but for OpenAI Gym there are different environments for the same game and they set it differently. For example, there is <tt class="docutils literal"><span class="pre">Breakout-v0</span></tt> that skips frames stochastically between 2 and 5, see <tt class="docutils literal">def _step()</tt> of <a class="reference external" href="https://github.com/openai/gym/blob/master/gym/envs/atari/atari_env.py">gym/envs/atari/atari_env.py</a>, and there is <tt class="docutils literal"><span class="pre">BreakoutDeterministic-v0</span></tt> that fixed the number of skipped frames to 4, see <a class="reference external" href="https://github.com/openai/gym/blob/master/gym/envs/__init__.py">gym/envs/__init__.py</a> for more details and additional environments with different settings.</li>
+<li>Both the ALE environment and the Gym environments with <tt class="docutils literal"><span class="pre">*-v0</span></tt> set <tt class="docutils literal">repeat_action_probability</tt> to <tt class="docutils literal">0.25</tt>. But the Gym environments with <tt class="docutils literal"><span class="pre">*-v3</span></tt> set it to <tt class="docutils literal">0</tt>.</li>
+</ul>
+</div>
+<div class="section" id="inside-openai-gym">
+<h3>Inside OpenAI Gym</h3>
+<p>To transfer one RL system to another OpenAI Gym environment, it is not recommended to tweak its parameters bypassing the APIs, but if needed the instance of <tt class="docutils literal">ALEInterface</tt> can be accessed like the following to set <tt class="docutils literal">repeat_action_probability</tt>.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gym</span>
+<span class="n">gym_ale</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;BreakoutDeterministic-v0&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">ale</span>
+<span class="c1"># Now we can access ALEInterface.</span>
+<span class="n">gym_ale</span><span class="o">.</span><span class="n">getFloat</span><span class="p">(</span><span class="s1">&#39;repeat_action_probability&#39;</span><span class="p">)</span>
+</pre></div>
+<p>But here we will refrain ourselves from doing such an operation.</p>
+</div>
+<div class="section" id="parameters-of-tf-train-rmspropoptimizer">
+<h3>Parameters of <tt class="docutils literal">tf.train.RMSPropOptimizer</tt></h3>
+<p>The optimization of the Q-network is done by minimizing the loss of the squared error of the Q-values using RMSProp. <a class="footnote-reference" href="#mnih13" id="id10">[1]</a> lacks the detail of how to choose the parameters of the optimizer, so we use the choice of <a class="footnote-reference" href="#mnih15" id="id11">[2]</a> for them. TensorFlow's <tt class="docutils literal">tf.train.RMSPropOptimizer</tt> uses different names for the parameters compared to <a class="footnote-reference" href="#mnih15" id="id12">[2]</a>. In the beginning of TensorFlow's <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/training/rmsprop.py">tensorflow/python/training/rmsprop.py</a>, it says</p>
+<div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;One-line documentation for rmsprop module.</span>
+<span class="sd">rmsprop algorithm [tieleman2012rmsprop]</span>
+<span class="sd">A detailed description of rmsprop.</span>
+<span class="sd">- maintain a moving (discounted) average of the square of gradients</span>
+<span class="sd">- divide gradient by the root of this average</span>
+<span class="sd">mean_square = decay * mean_square{t-1} + (1-decay) * gradient ** 2</span>
+<span class="sd">mom = momentum * mom{t-1} + learning_rate * g_t / sqrt(mean_square + epsilon)</span>
+<span class="sd">delta = - mom</span>
+<span class="sd">The centered version additionally maintains a moving (discounted) average of the</span>
+<span class="sd">gradients, and uses that average to estimate the variance:</span>
+<span class="sd">mean_grad = decay * mean_square{t-1} + (1-decay) * gradient</span>
+<span class="sd">mean_square = decay * mean_square{t-1} + (1-decay) * gradient ** 2</span>
+<span class="sd">mom = momentum * mom{t-1} + learning_rate * g_t /</span>
+<span class="sd">    sqrt(mean_square - mean_grad**2 + epsilon)</span>
+<span class="sd">delta = - mom</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+<p>and we need to find out what values of <tt class="docutils literal">decay</tt>, <tt class="docutils literal">momentum</tt>, <tt class="docutils literal">epsilon</tt>, and <tt class="docutils literal">centered</tt> of <tt class="docutils literal">tf.train.RMSPropOptimizer</tt> we should use by considering the hyperparameters described in <a class="footnote-reference" href="#mnih15" id="id13">[2]</a> and in the original Lua code <tt class="docutils literal">dqn/NeuralQLearner.lua</tt>.</p>
+<div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nc">nql</span><span class="p">:</span><span class="nf">qLearnMinibatch</span><span class="p">()</span>
+    <span class="c1">-- Perform a minibatch Q-learning update:</span>
+    <span class="c1">-- w += alpha * (r + gamma max Q(s2,a2) - Q(s,a)) * dQ(s,a)/dw</span>
+    <span class="nb">assert</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">transitions</span><span class="p">:</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">self</span><span class="p">.</span><span class="n">minibatch_size</span><span class="p">)</span>
+
+    <span class="kd">local</span> <span class="n">s</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">term</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">transitions</span><span class="p">:</span><span class="n">sample</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">minibatch_size</span><span class="p">)</span>
+
+    <span class="kd">local</span> <span class="n">targets</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">q2_max</span> <span class="o">=</span> <span class="n">self</span><span class="p">:</span><span class="n">getQUpdate</span><span class="p">{</span><span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">s2</span><span class="o">=</span><span class="n">s2</span><span class="p">,</span>
+        <span class="n">term</span><span class="o">=</span><span class="n">term</span><span class="p">,</span> <span class="n">update_qmax</span><span class="o">=</span><span class="kc">true</span><span class="p">}</span>
+
+    <span class="c1">-- zero gradients of parameters</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">dw</span><span class="p">:</span><span class="n">zero</span><span class="p">()</span>
+
+    <span class="c1">-- get new gradient</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">network</span><span class="p">:</span><span class="n">backward</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+
+    <span class="c1">-- add weight cost to gradient</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">dw</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="o">-</span><span class="n">self</span><span class="p">.</span><span class="n">wc</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">w</span><span class="p">)</span>
+
+    <span class="c1">-- compute linearly annealed learning rate</span>
+    <span class="kd">local</span> <span class="n">t</span> <span class="o">=</span> <span class="nb">math.max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">numSteps</span> <span class="o">-</span> <span class="n">self</span><span class="p">.</span><span class="n">learn_start</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">lr</span> <span class="o">=</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">lr_start</span> <span class="o">-</span> <span class="n">self</span><span class="p">.</span><span class="n">lr_end</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">lr_endt</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span><span class="o">/</span><span class="n">self</span><span class="p">.</span><span class="n">lr_endt</span> <span class="o">+</span>
+                <span class="n">self</span><span class="p">.</span><span class="n">lr_end</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">lr</span> <span class="o">=</span> <span class="nb">math.max</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">lr</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">lr_end</span><span class="p">)</span>
+
+    <span class="c1">-- use gradients</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">g</span><span class="p">:</span><span class="n">mul</span><span class="p">(</span><span class="mf">0.95</span><span class="p">):</span><span class="n">add</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">dw</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">tmp</span><span class="p">:</span><span class="n">cmul</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">dw</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">dw</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">g2</span><span class="p">:</span><span class="n">mul</span><span class="p">(</span><span class="mf">0.95</span><span class="p">):</span><span class="n">add</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">tmp</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">tmp</span><span class="p">:</span><span class="n">cmul</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">g</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">g</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">tmp</span><span class="p">:</span><span class="n">mul</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">tmp</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">g2</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">tmp</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">tmp</span><span class="p">:</span><span class="n">sqrt</span><span class="p">()</span>
+
+    <span class="c1">-- accumulate update</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">deltas</span><span class="p">:</span><span class="n">mul</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span><span class="n">addcdiv</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">lr</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">dw</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">tmp</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">w</span><span class="p">:</span><span class="n">add</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">deltas</span><span class="p">)</span>
+<span class="kr">end</span>
+</pre></div>
+<p>From the above we can see that <tt class="docutils literal">decay=0.95</tt> ((squared) gradient momentum in <a class="footnote-reference" href="#mnih15" id="id14">[2]</a>), <tt class="docutils literal">momentum=0</tt>, <tt class="docutils literal">epsilon=0.01</tt> (min squared gradient in <a class="footnote-reference" href="#mnih15" id="id15">[2]</a>), and <tt class="docutils literal">centered=True</tt>. And although the Lua code can anneal the learning rate depending on the setup, when we see <tt class="docutils literal">run_gpu</tt> of the original Lua code, the learning rate is fixed to <tt class="docutils literal">0.00025</tt>.</p>
+</div>
+<div class="section" id="preprocessing">
+<h3>Preprocessing</h3>
+<p><a class="footnote-reference" href="#mnih13" id="id16">[1]</a> does not describe how to transform an RGB screen captured from the Atari emulator to the input of the Q-network. <a class="footnote-reference" href="#mnih15" id="id17">[2]</a> gives a bit more detail, saying that preprocessing extracts the Y-channel from the RGB image. But for more detail, I looked into the Lua code.</p>
+<p>First, the transformation of the RGB image to a grayscale image with a smaller size is done using Torch's image libraries. In <tt class="docutils literal">dqn/Scale.lua</tt>,</p>
+<div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nc">scale</span><span class="p">:</span><span class="nf">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="kr">if</span> <span class="n">x</span><span class="p">:</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="kr">then</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="kr">end</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">image</span><span class="p">.</span><span class="n">rgb2y</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">image</span><span class="p">.</span><span class="n">scale</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">height</span><span class="p">,</span> <span class="s1">&#39;bilinear&#39;</span><span class="p">)</span>
+    <span class="kr">return</span> <span class="n">x</span>
+<span class="kr">end</span>
+</pre></div>
+<p>it uses Torch's <tt class="docutils literal"><span class="pre">image.rgb2yuv([dst,]</span> src)</tt> and <tt class="docutils literal">image.scale(src, width, height, [mode])</tt>. Next, Each image is saved in <tt class="docutils literal">uint8</tt>, then is cast into <tt class="docutils literal">float</tt> and is divided by <tt class="docutils literal">0xFF=255</tt>, the maximum value of <tt class="docutils literal">uint8</tt>.</p>
+<div class="highlight"><pre><span></span>dqn/TransitionTable.lua:109:    self.buf_s  <span class="o">=</span> self.buf_s:float<span class="o">()</span>:div<span class="o">(</span><span class="m">255</span><span class="o">)</span>
+dqn/TransitionTable.lua:110:    self.buf_s2 <span class="o">=</span> self.buf_s2:float<span class="o">()</span>:div<span class="o">(</span><span class="m">255</span><span class="o">)</span>
+dqn/TransitionTable.lua:259:    <span class="k">return</span> self:concatFrames<span class="o">(</span><span class="m">1</span>, <span class="nb">true</span><span class="o">)</span>:float<span class="o">()</span>:div<span class="o">(</span><span class="m">255</span><span class="o">)</span>
+dqn/TransitionTable.lua:290:    self.s<span class="o">[</span>self.insertIndex<span class="o">]</span> <span class="o">=</span> s:clone<span class="o">()</span>:float<span class="o">()</span>:mul<span class="o">(</span><span class="m">255</span><span class="o">)</span>
+dqn/TransitionTable.lua:302:    <span class="nb">local</span> <span class="nv">s</span> <span class="o">=</span> s:clone<span class="o">()</span>:float<span class="o">()</span>:mul<span class="o">(</span><span class="m">255</span><span class="o">)</span>:byte<span class="o">()</span>
+</pre></div>
+<p>But we will not rescale the input by <tt class="docutils literal">0xFF</tt>, assuming it will not affect the system as long as we consistently use the rescaling, or in fact not using any rescaling in our case.</p>
+<p>Then there is the question of how to initialize the stacked input for the Q-network when we reset the emulator. I reset it to zero and added the initial state preprocessed from the initial screen, according to what is done at <tt class="docutils literal">deep_atari.reset_game()</tt> of <a class="reference external" href="https://github.com/gliese581gg/DQN_tensorflow/blob/master/main.py">main.py:</a>. I think this is also what is done in the original Lua code, but another careful look at the code is needed.</p>
+</div>
+<div class="section" id="padding-of-convolution">
+<h3>Padding of convolution</h3>
+<p>Torch's <tt class="docutils literal">nn.SpatialCovolution</tt> does not add any padding, so we use <tt class="docutils literal">padding=VALID</tt> for <tt class="docutils literal">tf.conv2d</tt>.</p>
+</div>
+<div class="section" id="reward-rescaling">
+<h3>Reward rescaling</h3>
+<p>Unlike <a class="footnote-reference" href="#mnih13" id="id18">[1]</a> and <a class="footnote-reference" href="#mnih15" id="id19">[2]</a>, rescaling of rewards is not done, hoping that this may help in training the Q-network because a larger reward will give more positive feedback. However, as we will see later, the trained network performs not as good as those of <a class="footnote-reference" href="#mnih13" id="id20">[1]</a> and <a class="footnote-reference" href="#mnih15" id="id21">[2]</a>, so I guess this may not have been a big help.</p>
+</div>
+<div class="section" id="numpy-memoryerror">
+<h3>NumPy MemoryError</h3>
+<p>We instantiate the agent with allocating a big memory space for the replay memory using NumPy, about 7GB when we use a replay memory with size of 1 million. If there is not enough free memory space, NumPy will raise <tt class="docutils literal">MemoryError</tt>. If this happens then the agent should start with a smaller replay memory.</p>
+</div>
+</div>
+<div class="section" id="training">
+<h2>Training</h2>
+<p>Here I will discuss the training results. On the one hand, this is the result of running many episodes of games, so the results have some statistical significance in terms of average Q value per episode and average reward per episode; on the other hand, as training runs, each run is just a single experiment so it may be a bit of stretch to compare one run with another and contemplate on the significance of the different choice of parameters. With such a caveat, I will put the graphs of Q and reward that are measured in the following way.</p>
+<ul class="simple">
+<li>Average Q value per episode is measured not by taking average of all Q values for the past actions but according to the evaluation scheme of <a class="footnote-reference" href="#mnih15" id="id22">[2]</a>: we first pick <tt class="docutils literal">validation_size=500</tt> states once we start the training, then measure the average Q values of the states when evaluating the agent.</li>
+<li>Average reward per episode, on the other hand, is the genuine average over the past <tt class="docutils literal">50k</tt> steps(= weight updates), which is then reset to the reward of the last episode every <tt class="docutils literal">50k</tt> steps. This is different from the measurement of <a class="footnote-reference" href="#mnih15" id="id23">[2]</a>, which I guess is the same as that of <a class="footnote-reference" href="#mnih13" id="id24">[1]</a> because the description is similar although again it lacks the detail. When we implement the architecture of <a class="footnote-reference" href="#mnih15" id="id25">[2]</a> we will change the measurement of the average reward per episode accordingly.</li>
+</ul>
+<img alt="simple_dqn_training" class="align-center" src="./figures/rl_atari/simple_dqn_training.png" />
+<div class="section" id="vs-6-actions">
+<h3>4 vs 6 actions</h3>
+<p>As previously discussed, even when loading the same ROM, we get different sets of minimal actions depending on the environment. As an experiment as well as to normalize the results described in <a class="footnote-reference" href="#mnih13" id="id26">[1]</a> and <a class="footnote-reference" href="#mnih15" id="id27">[2]</a>, I trained the same OpenAI Gym environment with manually adjusted sets of actions. As we can expect, when there is less number of actions to consider, the agent is trained faster to achieve the same result, as we can see in <tt class="docutils literal">use_gym_deterministic</tt> and <tt class="docutils literal">use_gym_deterministic_4_actions</tt>.</p>
+</div>
+<div class="section" id="deterministic-vs-stochastic-frame-skipping">
+<h3>Deterministic vs stochastic frame skipping</h3>
+<p>In the graph we see labels with <tt class="docutils literal">default</tt> and labels with <tt class="docutils literal">deterministic</tt>, which use <tt class="docutils literal"><span class="pre">Breakout-v0</span></tt> and <tt class="docutils literal"><span class="pre">BreakoutDeterministic-v0</span></tt>, respectively, for OpenAI Gym environments. When we compare <tt class="docutils literal">use_gym_default</tt> with <tt class="docutils literal">use_gym_deterministic</tt>, it seems that the stochasticity introduced by random frame skipping was helpful in scoring higher reward as well as enabling the agent to get higher <span class="math">\(\frac{\dd Q}{\dd t}\)</span>, although the agent could not get trained enough to obtain the same average Q if it is trained with the randomness as that of the deterministic frame skipping.</p>
+</div>
+<div class="section" id="anomaly">
+<h3>Anomaly?</h3>
+<p>But when we compare <tt class="docutils literal">use_gym_default_4_actions</tt> with <tt class="docutils literal">use_gym_default</tt> or <tt class="docutils literal">use_gym_deterministic_4_actions</tt>, the above considerations seem to be not as certain as described. Because it is all the randomness being introduced, starting from the internal state of the emulator to <span class="math">\(\epsilon\)</span>-greedy policy, that makes such comparisons difficult. To make the above observations to be concrete hypothesis we need more training data, but because it takes about six hours to obtain each training data on my modest computer, and because we expect introducing a better architecture described in <a class="footnote-reference" href="#mnih15" id="id28">[2]</a> may give us faster training, I will not pursue those directions here.</p>
+</div>
+</div>
+<div class="section" id="result">
+<h2>Result</h2>
+<img alt="simple_dqn_training_10M" class="align-center" src="./figures/rl_atari/simple_dqn_training_10M.png" />
+<p>After training the agent for 10 million weight updates, it got the average reward per episode of about 12, which is higher than that of a random agent (1.7) or other RL agent without using a deep network (5~6), but is definitely much lower than a human average (~30). The following is the animation of the agent playing 10 episodes of Breakout.</p>
+<img alt="simple_dqn_play" class="align-center" src="./figures/rl_atari/play_simple_dqn.gif" />
+<p>We will pursue the goal of obtaining a level better than a human player after implementing a deeper architecture and a better training algorithm described in <a class="footnote-reference" href="#mnih15" id="id29">[2]</a>.</p>
+</div>
+<div class="section" id="coming-up">
+<h2>Coming up</h2>
+<p>In the following posts I will improve the current simple deep Q-network with additional implementation of:</p>
+<ul class="simple">
+<li>target Q-network</li>
+<li>error clipping</li>
+<li>deeper architecture of <a class="footnote-reference" href="#mnih15" id="id30">[2]</a></li>
+<li>evaluation scheme according to <a class="footnote-reference" href="#mnih15" id="id31">[2]</a></li>
+<li>reward rescaling</li>
+<li>policy gradient</li>
+<li>A3C</li>
+<li>seeding of random number generators in various parts of the agent and the environment.</li>
+</ul>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<table class="docutils footnote" frame="void" id="mnih13" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id3">2</a>, <a class="fn-backref" href="#id5">3</a>, <a class="fn-backref" href="#id9">4</a>, <a class="fn-backref" href="#id10">5</a>, <a class="fn-backref" href="#id16">6</a>, <a class="fn-backref" href="#id18">7</a>, <a class="fn-backref" href="#id20">8</a>, <a class="fn-backref" href="#id24">9</a>, <a class="fn-backref" href="#id26">10</a>)</em> Playing Atari with Deep Reinforcement Learning, <a class="reference external" href="https://arxiv.org/abs/1312.5602">https://arxiv.org/abs/1312.5602</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="mnih15" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id4">2</a>, <a class="fn-backref" href="#id6">3</a>, <a class="fn-backref" href="#id7">4</a>, <a class="fn-backref" href="#id11">5</a>, <a class="fn-backref" href="#id12">6</a>, <a class="fn-backref" href="#id13">7</a>, <a class="fn-backref" href="#id14">8</a>, <a class="fn-backref" href="#id15">9</a>, <a class="fn-backref" href="#id17">10</a>, <a class="fn-backref" href="#id19">11</a>, <a class="fn-backref" href="#id21">12</a>, <a class="fn-backref" href="#id22">13</a>, <a class="fn-backref" href="#id23">14</a>, <a class="fn-backref" href="#id25">15</a>, <a class="fn-backref" href="#id27">16</a>, <a class="fn-backref" href="#id28">17</a>, <a class="fn-backref" href="#id29">18</a>, <a class="fn-backref" href="#id30">19</a>, <a class="fn-backref" href="#id31">20</a>)</em> Human-level control through deep reinforcement learning, <a class="reference external" href="https://doi.org/10.1038/nature14236">https://doi.org/10.1038/nature14236</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="simple-dqn" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[3]</a></td><td>A simple deep Q-network for Atari game <em>Breakout</em>, <a class="reference external" href="https://github.com/chan-y-park/rl-atari/tree/simple_dqn">https://github.com/chan-y-park/rl-atari/tree/simple_dqn</a></td></tr>
+</tbody>
+</table>
+</div>
+<script type='text/javascript'>if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    var location_protocol = (false) ? 'https' : document.location.protocol;
+    if (location_protocol !== 'http' && location_protocol !== 'https') location_protocol = 'https:';
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+            </div>
+            <!-- /.entry-content -->
+    <hr />
+    <!-- AddThis Button BEGIN -->
+    <div class="addthis_toolbox addthis_default_style">
+            <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+            <a class="addthis_button_tweet"></a>
+            <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    </div>
+    <!-- AddThis Button END -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Comments</h2>
+
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            var disqus_shortname = 'chan-y-park'; // required: replace example with your forum shortname
+
+            var disqus_identifier = 'rl_atari_part_1';
+            var disqus_url = 'http://chan-y-park.github.io/blog/rl_atari_part_1.html';
+
+            var disqus_config = function () {
+                this.page.url = disqus_url;
+                this.page.identifier = disqus_identifier;
+                this.language = "en";
+            };
+
+            (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+            s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Follow</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="http://github.com/chan-y-park"><i class="fa fa-github-square fa-lg"></i> GitHub</a></li>
+                <li class="list-group-item"><a href="http://www.linkedin.com/in/chan-youn-park-51a13b63"><i class="fa fa-linkedin-square fa-lg"></i> LinkedIn</a></li>
+                <li class="list-group-item"><a href="http://twitter.com/chan_y_park"><i class="fa fa-twitter-square fa-lg"></i> Twitter</a></li>
+                <li class="list-group-item"><a href="http://www.facebook.com/chan.y.park.5"><i class="fa fa-facebook-square fa-lg"></i> Facebook</a></li>
+              </ul>
+            </li>
+
+
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="http://chan.physics.rutgers.edu/loom" target="_blank">
+                loom
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="http://chan.physics.rutgers.edu/cproj" target="_blank">
+                cproj
+            </a>
+        </li>
+      </ul>
+    </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Chan Y. Park
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="./theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="./theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="./theme/js/respond.min.js"></script>
+
+    <!-- Disqus -->
+    <script type="text/javascript">
+    /*
+        var disqus_shortname = 'chan-y-park'; // required: replace example with your forum shortname
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+    */
+    </script>
+    <!-- End Disqus Code -->
+
+        <script type="text/javascript">var addthis_config = {"data_track_addressbar": true};</script>
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=github blog"></script>
+</body>
+</html>
