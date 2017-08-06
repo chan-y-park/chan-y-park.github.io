@@ -150,7 +150,8 @@ Chan Y. Park            </a>
         }
     });
 </script><p>This is an expanded version of my talk &#64; SciPy 2016, adapted from the slides of the talk and scripts edited suitable for a blog post. The talk is recorded and posted on YouTube:</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Xy4Y9UoDhSM" frameborder="0" allowfullscreen></iframe><p>And the slides are available at <a class="reference external" href="http://chan.physics.rutgers.edu/reveal.js/scipy2016.html">http://chan.physics.rutgers.edu/reveal.js/scipy2016.html</a>.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Xy4Y9UoDhSM" frameborder="0" allowfullscreen></iframe><p>The GitHub repo of the project is <a class="reference external" href="http://github.com/chan-y-park/loom">http://github.com/chan-y-park/loom</a>.</p>
+<!-- And the slides are available at http://chan.physics.rutgers.edu/reveal.js/scipy2016.html. -->
 <div class="contents topic" id="table-of-contents">
 <p class="topic-title first">Table of Contents</p>
 <ul class="simple">
@@ -197,11 +198,12 @@ Chan Y. Park            </a>
 </div>
 <div class="section" id="introduction">
 <h2>Introduction</h2>
-<p>I am a postdoc studying string theory at Rutgers University. Here I want to share with you my experience of using Python in my research project. As a teaser, let me show you the end-product of the project, loom, whose web UI can be found at <a class="reference external" href="http://chan.physics.rutgers.edu/loom">http://chan.physics.rutgers.edu/loom</a>.</p>
-<a class="reference external image-reference" href="http://chan.physics.rutgers.edu/loom/"><img alt="loom front page #1" class="align-left" src="./figures/loom_scipy_2016/loom_front_page_1.png" /></a>
-<a class="reference external image-reference" href="http://chan.physics.rutgers.edu/loom/"><img alt="loom front page #2" class="align-left" src="./figures/loom_scipy_2016/loom_front_page_2.png" /></a>
+<p>I am a postdoc studying string theory at Rutgers University. Here I want to share with you my experience of using Python in my research project. As a teaser, let me show you the end-product of the project, loom, whose web UI can be found at <a class="reference external" href="http://het-math2.physics.rutgers.edu/loom/">http://het-math2.physics.rutgers.edu/loom/</a>.</p>
+<p>..http://chan.physics.rutgers.edu/loom.</p>
+<a class="reference external image-reference" href="http://het-math2.physics.rutgers.edu/loom/"><img alt="loom front page #1" class="align-left" src="./figures/loom_scipy_2016/loom_front_page_1.png" /></a>
+<a class="reference external image-reference" href="http://het-math2.physics.rutgers.edu/loom/"><img alt="loom front page #2" class="align-left" src="./figures/loom_scipy_2016/loom_front_page_2.png" /></a>
 <p>Here you can see many colorful plots produced for real research, and you can generate your own plot by first going to the configuration page, inputting a few parameters, and then clickcking ‘generate’ button. If you proceed with the default configuration, you can get the following nice colorful plot.</p>
-<a class="reference external image-reference" href="http://chan.physics.rutgers.edu/loom/plot?data=AD_from_pure_SU_3"><img alt="loom plot page" class="align-left" src="./figures/loom_scipy_2016/loom_plot_page.png" /></a>
+<a class="reference external image-reference" href="http://het-math2.physics.rutgers.edu/loom/plot?data=AD_from_pure_SU_3"><img alt="loom plot page" class="align-left" src="./figures/loom_scipy_2016/loom_plot_page.png" /></a>
 <div class="section" id="goal">
 <h3>Goal</h3>
 <p>In this post I will try to illustrate how Python is integrated throughout the progress of this project</p>
@@ -446,7 +448,7 @@ matplotlib plot example</object>
 <h4>Web application UI</h4>
 <p>But more emphasis was put on constructing a web frontend and web UI, because many of my theorist friends found it difficult to install Python and/or various Python libraries and I wanted to prepare a system and let my colleagues access it via web.  So a <strong>web frontend</strong> was built using <a class="reference external" href="http://flask.pocoo.org/">Flask</a> as a <strong>WSGI application</strong> running on an Apache web server, and the web application <strong>manages multiple instances of</strong> <tt class="docutils literal">loom</tt> <strong>processes</strong>.</p>
 <p>Then the web UI is implemented using JavaScript and Bokeh’s callback functions, and Server-Sent Events (SSE) were used to send log messages to client web browsers. Below is the web UI of loom for setting up a configuration of a spectral network to generate.</p>
-<a class="reference external image-reference" href="http://chan.physics.rutgers.edu/loom/config"><img alt="loom config page" class="align-left" src="./figures/loom_scipy_2016/loom_config_page.png" /></a>
+<a class="reference external image-reference" href="http://het-math2.physics.rutgers.edu/loom/config"><img alt="loom config page" class="align-left" src="./figures/loom_scipy_2016/loom_config_page.png" /></a>
 </div>
 </div>
 </div>
@@ -464,7 +466,7 @@ matplotlib plot example</object>
 <h2>More information</h2>
 <p>Source code for <tt class="docutils literal">loom</tt> can be found at <a class="reference external" href="http://github.com/chan-y-park/loom">http://github.com/chan-y-park/loom</a>.</p>
 <p>The preprint of a paper studying physics using <tt class="docutils literal">loom</tt> is available at <a class="reference external" href="http://arxiv.org/abs/1601.02633">http://arxiv.org/abs/1601.02633</a>.</p>
-<p>One of the physics talk slides based on <tt class="docutils literal">loom</tt> and the paper is at <a class="reference external" href="http://chan.physics.rutgers.edu/reveal.js/perimeter.html">http://chan.physics.rutgers.edu/reveal.js/perimeter.html</a>.</p>
+<!-- One of the physics talk slides based on ``loom`` and the paper is at http://chan.physics.rutgers.edu/reveal.js/perimeter.html. -->
 </div>
 <div class="section" id="references">
 <h2>References</h2>
@@ -641,20 +643,6 @@ matplotlib plot example</object>
 
 
 
-    <li class="list-group-item"><h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
-      <ul class="list-group" id="links">
-        <li class="list-group-item">
-            <a href="http://chan.physics.rutgers.edu/loom" target="_blank">
-                loom
-            </a>
-        </li>
-        <li class="list-group-item">
-            <a href="http://chan.physics.rutgers.edu/cproj" target="_blank">
-                cproj
-            </a>
-        </li>
-      </ul>
-    </li>
     </ul>
 </section>            </aside>
         </div>
